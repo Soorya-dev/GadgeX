@@ -1,0 +1,108 @@
+<%-include('../layoutAdmin/header')%>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Products List</h2>
+            <p>Lorem ipsum dolor sit amet.</p>
+        </div>
+        <div>
+            
+            <a href="#" class="btn btn-primary btn-sm rounded">Create new</a>
+        </div>
+    </div>
+    <div class="card mb-4">
+    
+        <!-- card-header end// -->
+
+        <div class="card mb-4">
+          
+            <!-- card-header end// -->
+
+            <div class="card-body">
+                <div class="table-responsive">
+                 
+                            <table class="table table-hover" id="example">
+                                <thead>
+                                    <tr>
+                                        <th>images</th>
+                                        <th>product name</th>
+                                        <th>category</th>
+                                        <th>price</th>
+                                        <th>Stock</th>
+
+                                        <th>Status</th>
+
+                                        <th>List/UnList</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% product.forEach(product=> { %>
+                                        <tr>
+
+
+                                            <td width="">
+                                                <div class="left">
+                                                    <img src="<%= product.image[0] %>"
+                                                        class="product-image img-sm img-thumbnail"
+                                                        alt="no image" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="info pl-3">
+                                                    <h6 class="mb-0 title">
+                                                        <%= product.name %>
+                                                    </h6>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <%= product.category %>
+                                            </td>
+                                            <td>
+                                                Rs:<%= product.price %>
+                </div>
+                </td>
+                <td>
+                    <%= product.stock %>
+                </td>
+                <td>
+                   asdsadsad
+                </td>
+
+                <td class="text-center">
+                   dasasd
+                </td>
+
+
+                <td class="text-">
+                    <div class="text float-center display-flex">
+
+                        <a href="/admin/products/editProduct?productId"
+                            class="btn  btn-sm font-sm rounded btn-brand"> <i class="material-icons md-edit"></i> Edit
+                        </a>
+                        <!-- <a href="" class="btn btn-sm font-sm btn-light rounded"> <i
+                                class="material-icons md-delete_forever"></i> Delete </a> -->
+                    </div>
+                </td>
+
+                </tr>
+
+
+                <% }); %>
+
+
+
+
+
+
+                    </tbody>
+                    </table>
+                    <!-- table-responsive.// -->
+            </div>
+        </div>
+        <!-- card-body end// -->
+    </div>
+    <!-- card end// -->
+   
+</section>
+<%-include('../layoutAdmin/footer')%>

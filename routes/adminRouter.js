@@ -1,69 +1,55 @@
-const express = require('express');
-const router = express.Router();
+const express = require("express");
+const adminRouter = express.Router();
+const adminController = require("../controller/adminController");
+const Product = require("../model/productModel"); // Assuming Product model in models folder
+const productController = require("../controller/productController");
+const categoryController = require("../controller/categoryController");
+const multer = require("multer");
+const path = require("path");
 
-// Middleware for authentication (replace with your implementation)
-const adminAuth = (req, res, next) => {
-    // Implement logic to check if user is logged in as admin
-    // If not authorized, redirect to login page or send error response
-    if (!req.isAdmin) {
-        return res.status(401).send('Unauthorized access. Please login as admin.');
-    }
-    next();
+const isAdmin = (req, res, next) => {
+  if (!req.session.user || !req.session.user.isAdmin) {
+    return res.redirect("/adminLogin"); // Redirect to login if not admin
+  }
+  next();
 };
-
-// Product management routes (using 'product' instead of 'products' for clarity)
-router.get('/admin/product', adminAuth, (req, res) => {
-    // Logic to fetch product data from database or model
-    const products = []; // Replace with your logic
-    res.render('admin/productManagement', { products });
+adminRouter.use(
+  express.static(path.join(__dirname, "..", "public", "uploads"))
+);
+// Multer setup for file upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "..", "public", "uploads"));
+  },
+  filename: function (req, file, cb) {
+    console.log('fileName:',file);
+    const name = Date.now() + "-" + file.originalname;
+    cb(null, name);
+  },
 });
+const upload = multer({ storage: storage });
 
-router.post('/admin/product/add', adminAuth, (req, res) => {
-    // Logic to handle product creation (validation, saving to database)
-    const newProduct = req.body; // Replace with proper product data extraction
-    // ... (product creation logic)
-    res.redirect('/admin/product'); // Redirect to product list after creation
-});
+adminRouter.get("/adminLogin", adminController.adminLoginPage);
+adminRouter.post("/adminLogin", adminController.adminLogin);
+adminRouter.get("/products", productController.getProductList);
+adminRouter.get("/products/add", productController.getAddProductForm);
+adminRouter.post(
+  "/products/add",
+  upload.single("productImage"),
+  productController.addProduct
+);
+adminRouter.get("/adminDashboard", adminController.adminDashboard);
+adminRouter.delete("/products/:productId", productController.deleteProduct);
+adminRouter.get(
+  "/products/edit/:productId",
+  productController.getEditProductForm
+);
+adminRouter.get("/viewProducts", productController.viewProducts);
 
-// ... (similar routes for product editing, deletion, etc.)
+//category management
+adminRouter.get("/categories", categoryController.getCategoryController);
+//create category
+adminRouter.post("/create-category", categoryController.createCategory);
 
-// User management routes
-router.get('/admin/user', adminAuth, (req, res) => {
-    // Logic to fetch user data from database or model
-    const users = []; // Replace with your logic
-    res.render('admin/userManager', { users });
-});
-
-router.post('/admin/user/edit/:userId', adminAuth, (req, res) => {
-    // Logic to handle user data editing (validation, saving to database)
-    const userId = req.params.userId;
-    const updatedUserData = req.body; // Replace with proper data extraction
-    // ... (user update logic)
-    res.redirect('/admin/user'); // Redirect to user list after edit
-});
-
-// ... (similar routes for user creation, deletion, etc.)
-
-// Category management routes
-router.get('/admin/category', adminAuth, (req, res) => {
-    // Logic to fetch category data from database or model
-    const categories = []; // Replace with your logic
-    res.render('admin/categoryManagement', { categories });
-});
-
-router.post('/admin/category/add', adminAuth, (req, res) => {
-    // Logic to handle category creation (validation, saving to database)
-    const newCategory = req.body; // Replace with proper category data extraction
-    // ... (category creation logic)
-    res.redirect('/admin/category'); // Redirect to category list after creation
-});
-
-// ... (similar routes for category editing, deletion, etc.)
-
-module.exports = router;
-
-router.get('/', function(req, res, next) {
-    res.render('user/login'); // Ensure this path is correct relative to your views directory
-});
-
-module.exports = router;
+// adminRouter.post("/products/edit/:productId",upload.single("productImage"), productController.editProduct);
+module.exports = adminRouter;
