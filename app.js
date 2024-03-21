@@ -1,6 +1,6 @@
 const path = require('path');
 const express = require('express');
-
+const nocache = require("nocache")
 const app = express();
 const userRouter = require('./routes/userRouter');
 const adminRouter = require('./routes/adminRouter');
@@ -18,7 +18,7 @@ app.use(express.json());
 
 // Session configuration (consider alternatives)
 app.use(session({ secret: 'your_secret_key', resave: false, saveUninitialized: true }));
-
+app.use(nocache())
 // User view engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));

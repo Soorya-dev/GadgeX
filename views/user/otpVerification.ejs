@@ -54,6 +54,7 @@
     <div class="otp-form">
         <h2>Enter OTP</h2>
         <form action="/verify-otp" method="POST">
+            <input type="hidden" value="<%= userId %>" id="userId">
             <% for(var i=1; i<=4; i++) { %>
                 <input class="otp-input" type="text" maxlength="1" name="otp<%= i %>" required>
             <% } %>
@@ -70,7 +71,7 @@
 
         // Function to start the timer
         function startTimer() {
-            countdown = 60;
+            countdown = 30;
             document.getElementById('timer').style.display = 'block';
             document.getElementById('resend-btn').style.display = 'none';
             updateTimer();
@@ -90,9 +91,24 @@
 
         // Function to resend OTP
         function resendOTP() {
-            // Add logic here to resend OTP (e.g., make AJAX request to server)
-            // After successful resend, start the timer again
-            startTimer();
+            const userId = document.getElementById('userId').value
+           alert("gggg")
+           fetch("/reSendOtp",{
+            method:"POST",
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({userId:userId})
+           }).then(responce=>responce.json())
+           .then(data=>{
+            if(data.success){
+                startTimer();
+
+            }else{
+                alert("not worked")
+            }
+
+           })
         }
 
         // Start the timer when the page loads

@@ -16,15 +16,15 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade" id="signin-2" role="tabpanel" aria-labelledby="signin-tab-2">
-                            <form action="/home">
+                            <form action="/login" method="post">
                                 <div class="form-group">
                                     <label for="singin-email-2">Email address *</label>
-                                    <input type="text" class="form-control" id="singin-email-2" name="singin-email" required>
+                                    <input type="text" class="form-control" id="singin-email-2" name="email" value="sooryadevanikkat2006@gmail.com" required>
                                 </div><!-- End .form-group -->
 
                                 <div class="form-group">
                                     <label for="singin-password-2">Password *</label>
-                                    <input type="password" class="form-control" id="singin-password-2" name="singin-password" required>
+                                    <input type="password" class="form-control" id="singin-password-2" name="password" value="sooryadev@8055" required>
                                 </div><!-- End .form-group -->
 
                                 <div class="form-footer">
@@ -33,10 +33,11 @@
                                         <i class="icon-long-arrow-right"></i>
                                     </button>
 
-                                    <div class="custom-control custom-checkbox">
+                                    <!-- <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="custom-control-input" id="signin-remember-2">
                                         <label class="custom-control-label" for="signin-remember-2">Remember Me</label>
-                                    </div><!-- End .custom-checkbox -->
+                                    </div> -->
+                                    <!-- End .custom-checkbox -->
 
                                     <a href="#" class="forgot-link">Forgot Your Password?</a>
                                 </div><!-- End .form-footer -->
@@ -74,6 +75,9 @@
                                             <span>SIGN UP</span>
                                             <i class="icon-long-arrow-right"></i>
                                         </button>
+                                        <% if (message) {%>
+                                            <p style="color: red;"><%=message%></p>
+                                     <%   } %>
                                     </div><!-- End .form-footer -->
                                 </form>
                             </div>

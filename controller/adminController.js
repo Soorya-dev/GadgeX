@@ -1,6 +1,7 @@
 const Product = require("../model/productModel");
 const Admin = require("../model/admin");
 const bcrypt = require("bcrypt");
+const User = require("../model/userModel");
 
 const adminDashboard = async (req, res) => {
   try {
@@ -68,7 +69,7 @@ const adminLogin = async (req, res) => {
       });
     }
 
-    req.session.adminId = admin;
+    // req.session.admin= admin_id;
 
     res.redirect("/admin/adminDashboard");
   } catch (error) {
@@ -76,9 +77,56 @@ const adminLogin = async (req, res) => {
     res.status(500).send("An error occurred during login.");
   }
 };
+const adminLogout = async (req, res) => {
+  try {
+    // Clear the admin session data
+    req.session.admin = null;
 
+    // Redirect the admin to the login page or home page
+    res.redirect("/admin/adminLogin");
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("An error occurred during logout.");
+  }
+};
+const userManagement=async(req,res)=>{
+  try {
+    const users = await User.find();
+    res.render("./admin/userManagement",{users})
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+const blockUser = async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    await User.findByIdAndUpdate(userId, { isBlocked: true });
+    res.redirect("/admin/userManagement");
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+const unblockUser = async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    await User.findByIdAndUpdate(userId, { isBlocked: false });
+    res.redirect("/admin/userManagement");
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
 module.exports = {
   adminLoginPage,
   adminLogin,
   adminDashboard,
+  adminLogout,
+  userManagement,
+  blockUser,
+  unblockUser
 };

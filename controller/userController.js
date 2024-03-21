@@ -1,7 +1,8 @@
-const User = require("../model/userModel");
 const otpDb = require("../model/otpModel");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
+const Products = require("../model/productModel");
+const User = require("../model/userModel");
 
 const securePassword = async (password) => {
   try {
@@ -14,9 +15,12 @@ const securePassword = async (password) => {
 
 const userHome = async (req, res) => {
   try {
-      res.render("./user/homeTemplate");
+    const userId = req.session.user_id;
+    console.log("id:", userId);
+    const user = await User.findOne({ _id: userId });
 
-    
+    console.log("userId", userId);
+    res.render("./user/homeTemplate", { user });
   } catch (error) {
     console.log(error.message);
   }
@@ -33,11 +37,9 @@ const userRegistration = async (req, res) => {
   try {
     console.log("body:", req.body);
 
-  
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
     console.log("Generated ", otp);
 
-    
     sendOtp(req.body.email, otp); // Replace sendOTP function with your actual sending logic
 
     const userExist = await User.findOne({ email: req.body.email });
@@ -79,6 +81,7 @@ const userRegistration = async (req, res) => {
 };
 
 // Function to send OTP via email
+
 const sendOtp = async (email, otp) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -99,109 +102,30 @@ const sendOtp = async (email, otp) => {
     // Send mail with defined transport object
     const info = await transporter.sendMail(mailOptions);
     console.log("Message sent: %s", info.messageId);
+    return info;
   } catch (error) {
     console.error("Error occurred while sending email:", error);
   }
 };
 
+const resendOtp = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    console.log("userId", userId);
+    const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+    const userData = await User.findOne({ _id: userId });
+    const { email } = userData;
 
-
-
-// var timer;
-// var countdown = 60; // Resend timeout in seconds
-
-// // Function to start the timer
-// function startTimer() {
-//   countdown = 60;
-//   document.getElementById('timer').style.display = 'block';
-//   document.getElementById('resend-btn').disabled = true; // Disable resend button initially
-//   updateTimer();
-//   timer = setInterval(updateTimer, 1000);
-// }
-
-// // Function to update the timer
-// function updateTimer() {
-//   countdown--;
-//   document.getElementById('countdown').textContent = countdown;
-//   if (countdown <= 0) {
-//     clearInterval(timer);
-//     document.getElementById('timer').style.display = 'none';
-//     document.getElementById('resend-btn').disabled = false; // Enable resend button
-//   }
-// }
-
-// // Function to resend OTP
-// async function resendOtp() {
-//   try {
-//     const userId = document.querySelector('input[name="userId"]').value;
-
-//     // Make an AJAX request to the server to resend OTP
-//     const response = await fetch('/resend-otp', {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ userId }),
-//     });
-
-//     if (!response.ok) {
-//       throw new Error('Failed to resend OTP');
-//     }
-
-//     const data = await response.json();
-//     if (data.success) {
-//       console.log('OTP resent successfully');
-//       startTimer(); // Restart the timer after successful resend
-//     } else {
-//       console.error('Error:', data.message);
-//       alert('Failed to resend OTP. Please try again later.');
-//     }
-//   } catch (error) {
-//     console.error('Error resending OTP:', error);
-//     alert('An error occurred. Please try again later.');
-//   }
-// }
-
-// // Start the timer when the page loads
-// startTimer();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    const info = sendOtp(email, otp);
+    if (info) {
+      return res.json({ success: true });
+    } else {
+      return res.json({ success: false });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 const verifyOtp = async (req, res) => {
   try {
@@ -217,14 +141,13 @@ const verifyOtp = async (req, res) => {
       return res.status(404).send("User not found");
     }
 
-    const storedOtp = userOtp.otp;  
+    const storedOtp = userOtp.otp;
     if (storedOtp === newOtp) {
-      
-      user.otp = null; 
-      user.isVerified = true; 
+      user.otp = null;
+      user.isVerified = true;
       await user.save();
-      req.session.user_id = user._id; 
-      res.redirect("/home"); 
+      req.session.user_id = user._id;
+      res.redirect("/home");
     } else {
       res.render("./user/otpVerification", { message: "Invalid OTP", userId });
     }
@@ -234,15 +157,30 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-
+const userLoginPage = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+    const user = await User.findOne({ _id: userId });
+    
+    res.render("./user/login", { user });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("thengaaaaaaaaaa", req, body);
+    console.log("user login err", req.body);
 
     // Check if email exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email });
+    console.log("user Email:", user);
+    if(user.isBlocked){
+      return res.render("./user/login",{message: "User is Blocked",user})
+      
+      
+    }
     if (!user) {
       return res.render("./user/login", {
         message: "Invalid email or password",
@@ -260,32 +198,58 @@ const userLogin = async (req, res) => {
     }
 
     // Login successful (optional: set user in session)
-    req.session.user = user; // Assuming you're using sessions
-
-    res.redirect("/home"); // Redirect to home page or desired route
+    req.session.user_id = user._id;
+    console.log("userID:", req.session.user_id);
+    res.redirect("/");
   } catch (error) {
     console.error(error.message);
     res.status(500).send("An error occurred during login.");
   }
 };
 
-const userLoginPage = async (req, res) => {
+const viewProduct = async (req, res) => {
   try {
-    res.render("./user/login");
+    const userId = req.session.user_id;
+    const user = await User.findOne({ _id: userId });
+    const products = await Products.find({});
+    res.render("./user/shop", { products ,user});
   } catch (error) {
     console.log(error.message);
   }
 };
 
+const singleProduct = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+    const user = await User.findOne({ _id: userId });
+    let productId = req.params.id;
+    console.log("productId:", productId);
+    let singleProduct = await Products.findOne({ _id: productId });
+    console.log("single ", singleProduct.name);
+    res.render("./user/singleProduct", { singleProduct,user });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const loadLogout = async (req, res) => {
+  try {
+    req.session.destroy();
+    res.redirect("/");
+  } catch (error) {
+    console.log("logout error", error.message);
+  }
+};
+
 module.exports = {
   userHome,
+  singleProduct,
   userLoginPage,
   userLogin,
   userRegistration,
   verifyOtp,
   sendOtp,
-  // resendOtp
+  viewProduct,
+  resendOtp,
+  loadLogout,
 };
-
-// user:"sooryadevanikkat2006@gmail.com",
-// pass: "dztt wwid nxnr yxgw"

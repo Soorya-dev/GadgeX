@@ -44,14 +44,14 @@ const addProduct = async (req, res) => {
     // console.log("reqBody:", req.body);
 
     const { category, productname, description, price } = req.body;
-    const imagePath = req.file.filename
-    console.log("imagePath", imagePath);
+    const imagePaths = req.files.map(file => file.filename); 
+    // console.log("imagePath", imagePaths);
     const newProduct = new Product({
       name: productname,
       description: description,
       price: price,
       category: category,
-      image: imagePath,
+      image: imagePaths,
     });
 
     await newProduct.save();
@@ -78,16 +78,7 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-const getEditProductForm = async (req, res) => {
-  try {
-    const productId = req.params.productId;
-    const product = await Product.findById(productId);
-    res.render("admin/editProduct", { product });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error fetching product for editing");
-  }
-};
+
 
 const editProduct = async (req, res) => {
   try {
@@ -128,13 +119,46 @@ const viewProducts = async (req, res) => {
     res.render("admin/viewProducts", { product });
   } catch (error) {}
 };
+const listProduct = async (req, res) => {
 
+
+  try {
+      console.log('bodyyyy', req.body)
+      const productId = req.body.productId
+      console.log('proodid', productId)
+
+      let proData = await Products.findByIdAndUpdate(productId, { status: 'unlisted' });
+      console.log('pros', proData)
+      if (proData) {
+          res.json({ success: true })
+      }
+
+  } catch (error) {
+      console.error(error.message);
+      res.status(500).send('Internal Server Error');
+  }
+};
+
+const unlistProduct = async (req, res) => {
+  const productId = req.body.productId
+  console.log('line 205', productId)
+
+  try {
+      await Products.findByIdAndUpdate(productId, { status: 'listed' });
+      console.log('unlisted');
+      res.json({ success: true })
+  } catch (error) {
+      console.error(error.message);
+      res.status(500).send('Internal Server Error');
+  }
+};
 module.exports = {
   getProductList,
   getAddProductForm,
   addProduct,
   deleteProduct,
-  getEditProductForm,
   editProduct,
   viewProducts,
+  listProduct,
+  unlistProduct
 };
