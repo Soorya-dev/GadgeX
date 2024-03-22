@@ -161,8 +161,9 @@ const userLoginPage = async (req, res) => {
   try {
     const userId = req.session.user_id;
     const user = await User.findOne({ _id: userId });
-    
-    res.render("./user/login", { user });
+
+    // Pass flash messages to the template
+    res.render("./user/login", {user, messages: req.flash() });
   } catch (error) {
     console.log(error.message);
   }
@@ -176,15 +177,15 @@ const userLogin = async (req, res) => {
     // Check if email exists
     const user = await User.findOne({ email: email });
     console.log("user Email:", user);
-    if(user.isBlocked){
-      return res.render("./user/login",{message: "User is Blocked",user})
-      
-      
-    }
     if (!user) {
-      return res.render("./user/login", {
-        message: "Invalid email or password",
-      });
+      req.flash("error", "Invalid email or password");
+      return res.redirect("/login");
+    }
+
+    // Check if user is blocked
+    if (user.isBlocked) {
+      req.flash("error", "User is Blocked");
+      return res.redirect("/login");
     }
 
     // Compare hashed password with login password
@@ -192,9 +193,8 @@ const userLogin = async (req, res) => {
     console.log("aaaaaaaaaaaaa", isPasswordMatch);
 
     if (!isPasswordMatch) {
-      return res.render("./user/login", {
-        message: "Invalid email or password",
-      });
+      req.flash("error", "Invalid email or password");
+      return res.redirect("/login");
     }
 
     // Login successful (optional: set user in session)
@@ -203,6 +203,7 @@ const userLogin = async (req, res) => {
     res.redirect("/");
   } catch (error) {
     console.error(error.message);
+    req.flash("error", "An error occurred during login.");
     res.status(500).send("An error occurred during login.");
   }
 };
@@ -212,7 +213,7 @@ const viewProduct = async (req, res) => {
     const userId = req.session.user_id;
     const user = await User.findOne({ _id: userId });
     const products = await Products.find({});
-    res.render("./user/shop", { products ,user});
+    res.render("./user/shop", { products, user });
   } catch (error) {
     console.log(error.message);
   }
@@ -226,7 +227,7 @@ const singleProduct = async (req, res) => {
     console.log("productId:", productId);
     let singleProduct = await Products.findOne({ _id: productId });
     console.log("single ", singleProduct.name);
-    res.render("./user/singleProduct", { singleProduct,user });
+    res.render("./user/singleProduct", { singleProduct, user });
   } catch (error) {
     console.log(error.message);
   }

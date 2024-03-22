@@ -26,7 +26,7 @@ const adminLoginPage = async (req, res) => {
 //     // Check if admin already exists
 //     const existingAdmin = await Admin.findOne({ email });
 //     if (existingAdmin) {
-//       return res.render('./admin/adminRegister', { message: 'Admin already exists' });
+//       return res.render('./admin/adminLogin', { message: 'Admin already exists' });
 //     }
 // console.log(req.body);
 //     // Hash the password
@@ -53,23 +53,29 @@ const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log(req.body);
+    console.log("dfghjk");
 
     const admin = await Admin.findOne({ email });
+    console.log(admin);
     if (!admin) {
       return res.render("./admin/adminLogin", {
         message: "Invalid email or password",
       });
     }
+    console.log("dfghjk");
 
     const isPasswordMatch = await bcrypt.compare(password, admin.password);
+    console.log("dfghjk");
 
-    if (!isPasswordMatch) {
+    if (isPasswordMatch===false) {
+
       return res.render("./admin/adminLogin", {
         message: "Invalid email or password",
       });
     }
-
-    // req.session.admin= admin_id;
+console.log("dfghjk");
+    req.session.admin= admin._id;
+    console.log(req.session.admin);
 
     res.redirect("/admin/adminDashboard");
   } catch (error) {
@@ -120,6 +126,15 @@ const unblockUser = async (req, res) => {
     console.log(error.message);
     res.status(500).send("Internal Server Error");
   }
+
+  const logout=async(req,res)=>{
+    try{
+
+
+    }catch(error){
+      console.log(error);
+    }
+  }
 };
 module.exports = {
   adminLoginPage,
@@ -128,5 +143,6 @@ module.exports = {
   adminLogout,
   userManagement,
   blockUser,
-  unblockUser
+  unblockUser,
+  
 };
