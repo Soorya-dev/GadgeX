@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-9">
         <div class="content-header">
-          <h2>Add New Product</h2>
+          <h2>Edit Product</h2>
           <div>
             <button class="btn btn-light rounded font-sm mr-5 text-body hover-up">Save to draft</button>
           </div>
@@ -15,23 +15,23 @@
             <h4>Basic</h4>
           </div>
           <div class="card-body">
-            <form action="/admin/products/add" method="post" enctype="multipart/form-data">
+            <form action="/admin/editProduct/<%= product._id %>" method="post" >
               <div class="mb-4">
                 <label for="product_name" class="form-label">Product title</label>
-                <input type="text" placeholder="$" class="form-control" name="productname"
+                <input type="text" placeholder="$" value="<%= product.name %>" class="form-control" name="productname"
                   title="Price must be a number" required />
               </div>
               <div class="mb-4">
                 <label class="form-label">Full description</label>
-                <textarea placeholder="Type here" class="form-control" rows="4" name="description"></textarea>
+                <textarea placeholder="Type here"  class="form-control" rows="4" name="description"><%= product.description %></textarea>
               </div>
 
               <div class="col-sm-6 mb-3">
                 <label class="form-label">Category</label>
                 <select class="form-select" name="category">
-                  <option>Automobiles</option>
-                  <option>Home items</option>
-
+                  <option>Mobiles</option>
+                  <option>Laptops</option>
+                  <option>Watches</option>  
                 </select>
               </div>
               <div class="row">
@@ -39,7 +39,7 @@
                   <div class="mb-4">
                     <label class="form-label">Regular price</label>
                     <div class="row gx-2">
-                      <input type="number" placeholder="$" class="form-control" name="price" pattern="\d+(\.\d{2})?"
+                      <input type="number" placeholder="$" value="<%= product.price %>" class="form-control" name="price" pattern="\d+(\.\d{2})?"
                         title="Price must be a number" required />
                     </div>
                   </div>
@@ -47,17 +47,21 @@
                 <div class="col-lg-4">
                   <div class="mb-4">
                     <label class="form-label">Stock</label>
-                    <input placeholder="$" type="number" class="form-control" name="stock" />
+                    <input placeholder="$" type="number" value="<%= product.stock %>" class="form-control" name="stock" />
                   </div>
                 </div>
               </div>
               <div class="mb-4">
                 <label class="form-label">Product image</label>
-                <input type="file" name="productImages" class="form-control" multiple required />
+                <input type="file" name="productImages" class="form-control" multiple />
               </div>
               <button class="btn btn-md rounded font-sm hover-up" type="submit">Publish</button>
             </form>
           </div>
+          <% product.image.forEach(img => { %>
+            <img src="/<%= img %>" alt="">
+           
+          <% }) %>
         </div>
       </div>
     </div>

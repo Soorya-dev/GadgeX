@@ -74,14 +74,13 @@
                                     <%= singleProduct.name %>
                                 </h1><!-- End .product-title -->
 
-                                <div class="ratings-container">
+                                <!-- <div class="ratings-container">
                                     <div class="ratings">
-                                        <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
+                                        <div class="ratings-val" style="width: 80%;"></div>
+                                    </div>
                                     <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews
                                         )</a>
-                                </div><!-- End .rating-container -->
-
+                                </div> -->
                                 <div class="product-price">
                                     <%= singleProduct.price %>
                                 </div><!-- End .product-price -->
@@ -94,16 +93,16 @@
 
                              
 
-                                <div class="details-filter-row details-row-size">
+                                <!-- <div class="details-filter-row details-row-size">
                                     <label for="qty">Qty:</label>
                                     <div class="product-details-quantity">
                                         <input type="number" id="qty" class="form-control" value="1" min="1" max="10"
                                             step="1" data-decimals="0" required>
-                                    </div><!-- End .product-details-quantity -->
-                                </div><!-- End .details-filter-row -->
-
+                                    </div>
+                                </div> -->
                                 <div class="product-details-action">
-                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                    <a href="#" class="btn-product btn-cart" onclick="addToCart('<%=singleProduct.id%>')"><span id="add-to-cart-btn">add to cart</span></a>
+
 
                                     <div class="details-action-wrapper">
                                         <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to
@@ -294,3 +293,40 @@
 
     
     <%-include('../layoutUser/footer.ejs')%>
+
+
+
+    // JavaScript code for the front-end
+<script>
+
+function addToCart(productId) {
+//   event.preventDefault(); // Prevent the default behavior of the anchor tag
+  console.log('productId:',productId);
+const quantity=1
+  fetch('/cart', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+     
+      productId,quantity
+     
+    })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log(data.message);
+    // Handle success, e.g., show a success message to the user
+  })
+  .catch(error => {
+    console.error('There was a problem with the fetch operation:', error);
+    // Handle errors, e.g., show an error message to the user
+  });
+}
+</script>

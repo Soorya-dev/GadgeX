@@ -1,13 +1,12 @@
 const express = require("express");
 const adminRouter = express.Router();
 const adminController = require("../controller/adminController");
-const Product = require("../model/productModel"); 
+const Product = require("../model/productModel");
 const productController = require("../controller/productController");
 const categoryController = require("../controller/categoryController");
 const multer = require("multer");
 const path = require("path");
-const auth = require('../middlewears/adminAuth');
-
+const auth = require("../middlewears/adminAuth");
 
 adminRouter.use(
   express.static(path.join(__dirname, "..", "public", "uploads"))
@@ -15,41 +14,97 @@ adminRouter.use(
 // Multer setup for file upload
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "..", "public", "uploads"));
+    cb(null, path.join(__dirname, "..", "public", "uploads", "resize"));
   },
   filename: function (req, file, cb) {
-    console.log('fileName:',file);
+    console.log("fileName:", file);
     const name = Date.now() + "-" + file.originalname;
     cb(null, name);
   },
 });
 const upload = multer({ storage: storage });
 
-adminRouter.get("/adminLogin",auth.isAdminLogout,adminController.adminLoginPage);
+adminRouter.get(
+  "/adminLogin",
+  auth.isAdminLogout,
+  adminController.adminLoginPage
+);
 adminRouter.post("/adminLogin", adminController.adminLogin);
-adminRouter.get("/products",auth.isAdminLogin, productController.getProductList);
-adminRouter.get("/products/add", productController.getAddProductForm);
+adminRouter.get(
+  "/products",
+  auth.isAdminLogin,
+  productController.getProductList
+);
+adminRouter.get(
+  "/products/add",
+  auth.isAdminLogin,
+  productController.getAddProductForm
+);
 adminRouter.post(
-  '/products/add',
-  upload.array('productImages', 4), 
+  "/products/add",
+  upload.array("productImages", 4),
   productController.addProduct
 );
-adminRouter.get("/adminDashboard", adminController.adminDashboard);
-adminRouter.delete("/products/:productId", productController.deleteProduct);
+adminRouter.get(
+  "/adminDashboard",
+  auth.isAdminLogin,
+  adminController.adminDashboard
+);
 
-adminRouter.get("/viewProducts", productController.viewProducts);
+adminRouter.get(
+  "/viewProducts",
+  auth.isAdminLogin,
+  productController.viewProducts
+);
+adminRouter.get(
+  "/editProduct/:id",
+  auth.isAdminLogin,
+  productController.getEditProduct
+);
 
-
+adminRouter.post("/editProduct/:id", productController.editProduct);
 
 //category management
-adminRouter.get("/categories", categoryController.getCategoryController);
+adminRouter.get(
+  "/categories",
+  auth.isAdminLogin,
+  categoryController.getCategoryController
+);
+//edit category
+adminRouter.get(
+  "/editCategory/:id",
+  auth.isAdminLogin,
+  categoryController.editCategory
+);
+adminRouter.post("/updateCategory/:id", categoryController.updateCategory);
+//delete category
+adminRouter.get(
+  "/deleteCategory/:categoryId",
+  categoryController.deleteCategory
+);
+
 //create category
 adminRouter.post("/create-category", categoryController.createCategory);
-adminRouter.get('/userManagement',adminController.userManagement)
-adminRouter.post('/userManagement/:userId/block', adminController.blockUser);
-adminRouter.post('/userManagement/:userId/unblock', adminController.unblockUser);
+adminRouter.get(
+  "/userManagement",
+  auth.isAdminLogin,
+  adminController.userManagement
+);
+adminRouter.post(
+  "/userManagement/:userId/block",
+  auth.isAdminLogin,
+  adminController.blockUser
+);
+adminRouter.post(
+  "/userManagement/:userId/unblock",
+  auth.isAdminLogin,
+  adminController.unblockUser
+);
 
 // adminRouter.post("/products/edit/:productId",upload.single("productImage"), productController.editProduct);
+adminRouter.get("/logout", adminController.adminLogout);
 
+adminRouter.post("/list-product/:productId", productController.listProduct);
+adminRouter.post("/unlist-product/:productId", productController.unlistProduct);
 
 module.exports = adminRouter;

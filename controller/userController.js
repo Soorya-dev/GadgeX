@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const Products = require("../model/productModel");
 const User = require("../model/userModel");
+const { message } = require("statuses");
 
 const securePassword = async (password) => {
   try {
@@ -27,20 +28,40 @@ const userHome = async (req, res) => {
 };
 
 // const userLogin = async (req, res) => {
+
 //   try {
 //     res.render("user/login");
 //   } catch (error) {
 //     console.log(error);
 //   }
 // };
+
+const loadRegistration=async(req,res)=>{
+  try {
+    res.render('./user/register',{user:"hello",message:""})
+  } catch (error) {  
+    console.log(error);
+  }
+}
+
+const otpRender =async (req,res)=>{
+  res.render("./user/otpVerification")
+}
+
+const otpPage = async (req,res)=>{
+  const userId=req.params.userId
+  res.render("./user/otpVerification", {
+    userId
+  });
+}
+
 const userRegistration = async (req, res) => {
   try {
     console.log("body:", req.body);
-
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-    console.log("Generated ", otp);
+    console.log("Generated ", otp); 
 
-    sendOtp(req.body.email, otp); // Replace sendOTP function with your actual sending logic
+    // Replace sendOTP function with your actual sending logic
 
     const userExist = await User.findOne({ email: req.body.email });
     // if (userExist) {
@@ -66,9 +87,12 @@ const userRegistration = async (req, res) => {
         userId: user._id,
       });
       await userOtp.save();
-      return res.render("./user/otpVerification", {
-        userId: user._id,
-      });
+      
+      // Send OTP and wait for it to complete
+       await sendOtp(req.body.email, otp);
+      
+      // Render OTP verification page after OTP is sent
+      return res.json({success:true,userId: user._id})
     } else {
       return res.render("./user/login", {
         message: "Your registration has failed",
@@ -79,6 +103,7 @@ const userRegistration = async (req, res) => {
     return res.status(500).send("An error occurred during registration.");
   }
 };
+
 
 // Function to send OTP via email
 
@@ -133,6 +158,7 @@ const verifyOtp = async (req, res) => {
     newOtp = Number(otp1 + otp2 + otp3 + otp4);
     console.log(req.body, newOtp);
     const userId = req.body.userId;
+    console.log("userId",userId);
     const userOtp = await otpDb.findOne({ userId: userId });
     const user = await User.findOne({ _id: userId });
 
@@ -157,13 +183,14 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-const userLoginPage = async (req, res) => {
+const userLoginPage = async (req, res) => { 
   try {
     const userId = req.session.user_id;
+    
     const user = await User.findOne({ _id: userId });
 
     // Pass flash messages to the template
-    res.render("./user/login", {user, messages: req.flash() });
+    res.render("./user/login", {user, message: req.flash});
   } catch (error) {
     console.log(error.message);
   }
@@ -171,37 +198,40 @@ const userLoginPage = async (req, res) => {
 
 const userLogin = async (req, res) => {
   try {
+    console.log(req.body);
     const { email, password } = req.body;
-    console.log("user login err", req.body);
+    console.log("body:", req.body);
 
     // Check if email exists
     const user = await User.findOne({ email: email });
-    console.log("user Email:", user);
     if (!user) {
+      console.log("user not found");
       req.flash("error", "Invalid email or password");
       return res.redirect("/login");
     }
 
     // Check if user is blocked
     if (user.isBlocked) {
+      console.log("blocked");
       req.flash("error", "User is Blocked");
       return res.redirect("/login");
     }
 
     // Compare hashed password with login password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
-    console.log("aaaaaaaaaaaaa", isPasswordMatch);
-
     if (!isPasswordMatch) {
+      console.log('password not match');
       req.flash("error", "Invalid email or password");
       return res.redirect("/login");
+      
     }
 
-    // Login successful (optional: set user in session)
+    // Login successful (set user in session)
     req.session.user_id = user._id;
     console.log("userID:", req.session.user_id);
-    res.redirect("/");
-  } catch (error) {
+    return  res.json({success:true})
+    } catch (error) {
+  
     console.error(error.message);
     req.flash("error", "An error occurred during login.");
     res.status(500).send("An error occurred during login.");
@@ -210,14 +240,15 @@ const userLogin = async (req, res) => {
 
 const viewProduct = async (req, res) => {
   try {
-    const userId = req.session.user_id;
-    const user = await User.findOne({ _id: userId });
+    const user = req.session.user_id;
     const products = await Products.find({});
-    res.render("./user/shop", { products, user });
-  } catch (error) {
-    console.log(error.message);
-  }
+    res.render('user/shop', { products,user }); 
+} catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+}
 };
+
 
 const singleProduct = async (req, res) => {
   try {
@@ -236,9 +267,104 @@ const singleProduct = async (req, res) => {
 const loadLogout = async (req, res) => {
   try {
     req.session.destroy();
-    res.redirect("/");
+    res.redirect("/home");
   } catch (error) {
     console.log("logout error", error.message);
+  }
+};
+const loadUserProfile = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+    const user = await User.findById(userId); // Example: Fetch user data using Mongoose
+    console.log("user profile",user);
+    if (!user) {
+      // If user is not found, throw an error
+      throw new Error('User not found');
+    }
+
+    res.render('./user/userProfile', { user });
+  } catch (error) {
+    console.error('Error loading user profile:', error);
+    res.status(500).send('Error loading user profile'); // Send an error response
+  }
+};
+
+const getForgotPassword = (req, res) => {
+  res.render('/forgotPassword'); 
+};
+const ForgotPassword = async (req, res) => {
+  const {email}=req.body;
+  try{
+    const user=await User.findOne({email});
+    if(!user){
+      return res.status(400).send("No user with the email")
+    }
+    const resetToken=crypto.randomBytes(32).toString('hex')
+user.resetPasswordToken=resetToken
+user.resetPasswordExpires=Date.now()+3600000;
+await user.save();
+const transporter=nodemailer.createTransport({
+  service:'Gmail',
+  auth: {
+    user: "sooryadevanikkat2006@gmail.com",
+    pass: "dztt wwid nxnr yxgw",
+  },
+});
+const mailOptions={
+  to:user.email,
+  fromn:"sooryadevanikkat2006@gmail.com",
+  subject:"forgot password",
+  text:`You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n` +
+  `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
+  `http://${req.headers.host}/reset/${resetToken}\n\n` +
+  `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+}
+await transporter.sendMail(mailOptions);
+res.status(200).send('a reset link has been send to you email')}
+catch(err){
+  console.error(err);
+  res.status(500).send('internal Server error')
+}
+}
+
+const getResetPassword=async(req,res)=>{
+  try{
+    const user =await User.findOne({
+      resetPasswordToken:req.params.token,
+      resetPasswordExpires:{$gt:Date.now()}
+
+    })
+    if(!user){
+      return res.status(400).send('Password reset invalid or has expired')
+    }
+    res.render('.user/ResetPassword',{token:req.params>token})
+  }catch(err){
+    console.error(err);
+    res.status(500).send('Internal Sever Error')
+  }
+  
+  }
+const resetPassword=async(req,res)=>{
+  const {token}=req.params
+  const{password}=req.body
+  try{
+    const user=await User.findOne({
+      resetPasswordToken:token,
+      resetPasswordExpires:{$gt:Date.now()}
+    })
+    if (!user) {
+      return res.status(400).send('Password reset token is invalid or has expired.');
+    }
+
+    user.password = password; // Make sure to hash the password before saving
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).send('Password has been reset successfully');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
   }
 };
 
@@ -253,4 +379,13 @@ module.exports = {
   viewProduct,
   resendOtp,
   loadLogout,
+  otpPage,
+  loadRegistration,
+  loadUserProfile,
+  getForgotPassword,
+  resetPassword,
+  getResetPassword,
+  ForgotPassword,
+
+  
 };

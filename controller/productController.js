@@ -64,7 +64,7 @@ const addProduct = async (req, res) => {
 
         .toFile(imagePath);
 
-      imagePaths[i]=req.files[i].filename;
+      imagePaths[i] = req.files[i].filename;
     }
     const newProduct = new Product({
       name: productname,
@@ -89,16 +89,14 @@ const viewProducts = async (req, res) => {
     res.render("admin/viewProducts", { product });
   } catch (error) {}
 };
+
 const listProduct = async (req, res) => {
   try {
-    console.log("bodyyyy", req.body);
-    const productId = req.body.productId;
-    console.log("proodid", productId);
-
-    let proData = await Products.findByIdAndUpdate(productId, {
-      status: "unlisted",
+    const productId = req.params.productId;
+    console.log("productId:", productId);
+    const proData = await Product.findByIdAndUpdate(productId, {
+      isListed: "false",
     });
-    console.log("pros", proData);
     if (proData) {
       res.json({ success: true });
     }
@@ -121,6 +119,7 @@ const unlistProduct = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
 const getEditProduct = async (req, res) => {
   try {
     const id = req.params.id;

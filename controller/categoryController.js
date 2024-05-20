@@ -24,10 +24,8 @@ const createCategory = async (req, res) => {
             description: description
         });
 
-        // Save the new category to the database
         const savedCategory = await newCategory.save();
 
-        // Redirect the client to '/admin/create-category' after successfully creating the category
         res.redirect('/admin/categories');
     } catch (error) {
         console.log(error.message);
@@ -46,15 +44,12 @@ const deleteCategory = async (req, res) => {
     }
 };
 
-// Load the edit category form
-
-
 const editCategory = async (req, res) => {
     try {
         const { id } = req.params;
         console.log("edit category id ", id);
         const category = await Category.findById(id);
-        res.render("admin/editCategory", { category }); // Assuming your view file is in the "admin" directory
+        res.render("admin/editCategory", { category }); 
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Internal Server Error');
