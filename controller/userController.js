@@ -110,26 +110,26 @@ const userRegistration = async (req, res) => {
 const sendOtp = async (email, otp) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: 'gmail',
       auth: {
-        user: "sooryadevanikkat2006@gmail.com",
-        pass: "dztt wwid nxnr yxgw",
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     const mailOptions = {
-      from: "sooryadevanikkat2006@gmail.com",
+      from: process.env.EMAIL_USER,
       to: email,
-      subject: "Verify your email",
+      subject: 'Verify your email',
       html: `<div>Your OTP: ${otp}</div>`,
     };
 
     // Send mail with defined transport object
     const info = await transporter.sendMail(mailOptions);
-    console.log("Message sent: %s", info.messageId);
+    console.log('Message sent: %s', info.messageId);
     return info;
   } catch (error) {
-    console.error("Error occurred while sending email:", error);
+    console.error('Error occurred while sending email:', error);
   }
 };
 
@@ -306,8 +306,8 @@ await user.save();
 const transporter=nodemailer.createTransport({
   service:'Gmail',
   auth: {
-    user: "sooryadevanikkat2006@gmail.com",
-    pass: "dztt wwid nxnr yxgw",
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   },
 });
 const mailOptions={

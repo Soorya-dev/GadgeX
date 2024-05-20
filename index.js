@@ -12,7 +12,7 @@ const flash = require('express-flash');
 
 const port = 30000;
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/PhoneX", {
+mongoose.connect(process.env.Mongo_Host, {
   serverSelectionTimeoutMS: 5000,
 });
 app.use(
