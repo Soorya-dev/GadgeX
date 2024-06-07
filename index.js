@@ -1,4 +1,4 @@
-var morgan = require('morgan')
+const morgan = require('morgan')
 const path = require("path");
 const express = require("express");
 const nocache = require("nocache");

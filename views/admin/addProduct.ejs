@@ -54,8 +54,10 @@
               </div>
               <div class="mb-4">
                 <label class="form-label">Product image</label>
-                <input type="file" name="productImages" class="form-control" multiple required />
+                <input type="file" name="productImages" class="form-control" id="productImages" multiple required />
               </div>
+              <div id="imagePreview" class="d-flex flex-wrap"></div>
+              
               <button class="btn btn-md rounded font-sm hover-up" type="submit">Publish</button>
             </form>
           </div>
@@ -63,4 +65,40 @@
       </div>
     </div>
   </section>
+
+  <script>
+    document.getElementById('productImages').addEventListener('change', function(event) {
+  const files = event.target.files;
+  const previewContainer = document.getElementById('imagePreview');
+  previewContainer.innerHTML = ''; // Clear any existing previews
+
+  for (const file of files) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const imgElement = document.createElement('img');
+      imgElement.src = e.target.result;
+      imgElement.style.width = '100px'; // Adjust the size as needed
+      imgElement.style.margin = '10px';
+      previewContainer.appendChild(imgElement);
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+  </script>
+
+  <style>
+    #imagePreview img {
+  max-width: 100px;
+  max-height: 100px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+  </style>
+
+
+
   <%- include('../layoutAdmin/footer') %>

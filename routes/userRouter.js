@@ -38,17 +38,23 @@ route.get("/logout", auth.isUserLogin, userController.loadLogout);
 
 //Cart route
 
-route.get('/cart',  cartController.loadCart);
+route.get('/cart',  cartController.loadCart); 
 route.post('/cart', cartController.AddToCart);
+route.post('/updateQuantity',cartController.updateQuantity);
 // route.post("/updatecart", cartController.UpdateCart);
 // route.delete("/removecart",  cartController.removeCart);
 
 //user profile route
 route.get('/userProfile',  userController.loadUserProfile);
+route.post('/addAddress',userController.addAddress)
+route.get('/addAddress',userController.addAddress)
 
 // checkout
 route.get('/checkout',orderController.loadCheckout)
+route.post('/checkoutAddress',orderController.checkoutAddress)
+route.post('/saveOrder', orderController.saveOrder);
 
+route.get('/Successpage',orderController.orderSuccess)
 
 
 module.exports = route;

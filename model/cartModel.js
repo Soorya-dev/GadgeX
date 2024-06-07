@@ -30,7 +30,11 @@ const cartModel = new mongoose.Schema({
                 default: 0,
             }
         }
-    ]
+    ],
+    subtotal: {
+        type: Number,
+       
+    }
 })
 
 module.exports = mongoose.model("Cart", cartModel)
