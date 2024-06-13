@@ -1,4 +1,5 @@
 const Product = require("../model/productModel");
+const Category = require("../model/categoryModel");
 const Admin = require("../model/admin");
 const multer = require("multer");
 const mongoose = require("mongoose");
@@ -8,17 +9,35 @@ const path = require("path");
 
 const getProductList = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.render("admin/productList", { products });
+    const { sort } = req.query;
+    let sortOption = {};
+
+    switch (sort) {
+      case 'popularity':
+        sortOption = { popularity: -1 };
+        break;
+      case 'price_low_high':
+        sortOption = { price: 1 };
+        break;
+      // Add other sorting cases as needed
+      default:
+        sortOption = {};
+        break;
+    }
+
+    const products = await Product.find().sort(sortOption);
+    res.render("user/productList", { products });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching products");
   }
 };
 
-const getAddProductForm = (req, res) => {
+const getAddProductForm = async (req, res) => {
   try {
-    res.render("admin/addProduct");
+    const category=await Category.find()
+    console.log(category,"get addproduct c");
+    res.render("admin/addProduct",{category});
   } catch (error) {
     console.log("error");
   }
@@ -45,10 +64,11 @@ const getAddProductForm = (req, res) => {
 //                               };
 const addProduct = async (req, res) => {
   try {
-    // console.log("reqBody:", req.body);
+    console.log("reqBody:", req.body);
 
     const { category, productname, description, price } = req.body;
     const imagePaths = [];
+    console.log(category,"add category");
     // console.log("imagePath", imagePaths);
     // Loop through each uploaded file
     for (let i = 0; i < req.files.length; i++) {
@@ -84,9 +104,10 @@ const addProduct = async (req, res) => {
 
 const viewProducts = async (req, res) => {
   try {
-    const product = await Product.find({});
-    // console.log('product:',product);
-    res.render("admin/viewProducts", { product });
+    const category=await Category.find()
+    const product = await Product.find().populate("category");
+    console.log('product:',product);
+    res.render("admin/viewProducts", { product,category });
   } catch (error) {}
 };
 
@@ -122,10 +143,11 @@ const unlistProduct = async (req, res) => {
 
 const getEditProduct = async (req, res) => {
   try {
+    const category=await Category.find()
     const id = req.params.id;
     const objectId = new mongoose.Types.ObjectId(id);
     const product = await Product.findOne({ _id: objectId });
-    res.render("admin/editProduct", { product });
+    res.render("admin/editProduct", { product,category });
   } catch (error) {
     console.log(error);
   }
@@ -160,7 +182,7 @@ const editProduct = async (req, res) => {
     }
     console.log(updatedProduct);
 
-    res.redirect("/admin/products"); // Redirect to products page after successful update
+    res.redirect("/admin/viewroducts"); // Redirect to products page after successful update
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");

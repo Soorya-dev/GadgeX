@@ -2,6 +2,7 @@ const Product = require("../model/productModel");
 const Admin = require("../model/admin");
 const bcrypt = require("bcrypt");
 const User = require("../model/userModel");
+const Order = require("../model/order");
 
 const adminDashboard = async (req, res) => {
   try {
@@ -53,7 +54,7 @@ const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log(req.body);
-    console.log("dfghjk");
+
 
     const admin = await Admin.findOne({ email });
     console.log(admin);
@@ -62,10 +63,10 @@ const adminLogin = async (req, res) => {
         message: "Invalid email or password",
       });
     }
-    console.log("dfghjk");
+
 
     const isPasswordMatch = await bcrypt.compare(password, admin.password);
-    console.log("dfghjk");
+    
 
     if (isPasswordMatch===false) {
 
@@ -73,9 +74,16 @@ const adminLogin = async (req, res) => {
         message: "Invalid email or password",
       });
     }
-console.log("dfghjk");
-    req.session.admin= admin._id;
+
+
+
+
+    // req.session.admin= admin._id;
+    req.session.admin='65fd102c4e85065509ecca42'
     console.log(req.session.admin);
+
+
+     
 
     res.redirect("/admin/adminDashboard");
   } catch (error) {
@@ -137,7 +145,78 @@ const unblockUser = async (req, res) => {
   }
 };
 
+const loadOrder = async (req, res) => {
+  try {
+    const orders = await Order.find().populate('user').populate('product.productId').populate('addressId');
+    res.render('./admin/orders', {
+      orders
+    });
+  } catch (error) {
+    console.error("Error loading orders:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
 
+
+// Load order details
+const loadOrderDetails = async (req, res) => {
+  try {
+    const orderId = req.query.id; // Assuming the order ID is passed as a query parameter
+    const order = await Order.findById(orderId)
+      .populate('user')
+      .populate('product.productId')
+      .populate('addressId');
+
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    res.render('./admin/orderDetails', {
+      order
+    });
+  } catch (error) {
+    console.error("Error loading order details:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+const OrderStatus = async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    order.status = status;
+    await order.save();
+
+    res.redirect('/admin/orders');
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+const cancelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    order.status = 'Canceled';
+    await order.save();
+
+    res.redirect('/admin/orders');
+  } catch (error) {
+    console.error("Error canceling order:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
 
 module.exports = {
   adminLoginPage,
@@ -147,5 +226,9 @@ module.exports = {
   userManagement,
   blockUser,
   unblockUser,
+  loadOrder,
+  loadOrderDetails,
+  OrderStatus,
+  cancelOrder
   
 };

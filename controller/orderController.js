@@ -4,9 +4,13 @@ const cartDB = require("../model/cartModel");
 const Address = require("../model/addressModel");
 const Product = require("../model/productModel");
 const Order = require("../model/order");
+const mongoose = require('mongoose');
+
+
 const loadCheckout = async (req, res) => {
   try {
-    const userId = req.session.user_id;
+    // const userId = req.session.user_id;
+    const userId = "6645980ce3ebbba4ec9b98ba"
     const user = await User.findOne({ _id: userId });
     const address = await Address.find({ user: userId });
     const cart = await cartDB
@@ -19,7 +23,7 @@ const loadCheckout = async (req, res) => {
         address,
         cart: [],
         subtotal: 0,
-      });
+      }); 
     }
 
     const subtotal = cart.product.reduce((sum, item) => sum + item.total, 0);
@@ -89,50 +93,90 @@ function calculateSubtotal(products) {
 const saveOrder = async (req, res) => {
   try {
     const userId = req.session.user_id;
-    const { addressId, paymentMethod } = req.body;
-
-    // Retrieve cart data for the user
-    const cartData = await cartDB.findOne({ user: userId });
-
-    if (!cartData) {
-      return res.status(400).json({ error: "Cart not found" });
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is not found in session' });
     }
 
-   
-const products=cartData.product
-console.log('cartData:',cartData);
-console.log('products:',products);
-    // Create new order object
+    const { addressId, paymentMethod } = req.body;
+    if (!addressId || !paymentMethod) {
+      return res.status(400).json({ error: 'Address ID or Payment Method missing from request body' });
+    }
+
+    const cartData = await cartDB.findOne({ user: userId });
+    if (!cartData) {
+      return res.status(400).json({ error: 'Cart not found for the user' });
+    }
+
+    const products = cartData.product;
+    if (!products || products.length === 0) {
+      return res.status(400).json({ error: 'Cart is empty' });
+    }
+
+    const subtotal = products.reduce((sum, item) => sum + item.total, 0);
+
     const newOrder = new Order({
       user: userId,
       paymentMethod: paymentMethod || "COD",
       product: products,
-      subtotal: cartData.subtotal,
+      subtotal: subtotal,
       Date: new Date(),
-
       addressId: addressId,
-      status: "Pending", // You can set the initial status here
-      discount: 0, // You can set the discount if applicable
+      status: "Pending",
+      discount: 0,
     });
 
-    // Save the order to the database
     await newOrder.save();
 
-    // Clear the user's cart
+    for (const item of products) {
+      const product = await Product.findById(item.productId);
+      if (!product) {
+        return res.status(400).json({ error: `Product not found: ${item.productId}` });
+      }
+
+      if (product.stock < item.quantity) {
+        return res.status(400).json({ error: `Insufficient stock for product ${product.name}` });
+      }
+
+      product.stock -= item.quantity;
+      await product.save();
+    }
+
     await cartDB.updateOne({ user: userId }, { $set: { product: [] } });
 
-    // res.render('./user/SuccessPage',{orderId: newOrder._id})
-    res.status(201).json("Order placed successfully");
+    res.render('./user/SuccessPage', {
+      order: newOrder
+    });
   } catch (error) {
-    console.error("Error saving order:", error);
+    console.error("Error saving order:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
+
+// Get User Orders Function
+const getUserOrder = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+    const orders = await Order.find({ user: userId }).populate('product.productId');
+
+    res.render('./user/orders', {
+      orders
+    });
+  } catch (error) {
+    console.error("Error getting user orders:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+// Order Success Function
 const orderSuccess = async (req, res) => {
   try {
     const userId = req.session.user_id;
-    res.render('./user/SuccessPage')
+    const user = await User.findOne({ _id: userId });
+    const address = await Address.find({ user: userId });
+
+    console.log(userId, "user console");
+    res.render('./user/SuccessPage');
   } catch (error) {
     console.error("Error loading checkout:", error);
     res.status(500).send("Internal Server Error");
@@ -144,4 +188,109 @@ module.exports = {
   checkoutAddress,
   saveOrder,
   orderSuccess,
+  getUserOrder
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const saveOrder = async (req, res) => {
+//   try {
+//     const userId = req.session.user_id;
+//     const { addressId, paymentMethod } = req.body;
+
+//     // Retrieve cart data for the user
+//     const cartData = await cartDB.findOne({ user: userId });
+
+//     if (!cartData) {
+//       return res.status(400).json({ error: "Cart not found" });
+//     }
+
+   
+// const products=cartData.product
+// console.log('cartData:',cartData);
+// console.log('products:',products);
+//     // Create new order object
+//     const newOrder = new Order({
+//       user: userId,
+//       paymentMethod: paymentMethod || "COD",
+//       product: products,
+//       subtotal: cartData.subtotal,
+//       Date: new Date(),
+
+//       addressId: addressId,
+//       status: "Pending", // You can set the initial status here
+//       discount: 0, // You can set the discount if applicable
+//     });
+
+//     // Save the order to the database
+//     await newOrder.save();
+
+//     // Clear the user's cart
+//     await cartDB.updateOne({ user: userId }, { $set: { product: [] } });
+
+//     // res.render('./user/SuccessPage',{orderId: newOrder._id})
+//     res.status(201).json("Order placed successfully");
+//   } catch (error) {
+//     console.error("Error saving order:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// const orderSuccess = async (req, res) => {
+//   try {
+//     const userId = req.session.user_id;
+//     res.render('./user/SuccessPage')
+//   } catch (error) {
+//     console.error("Error loading checkout:", error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };

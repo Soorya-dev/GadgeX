@@ -65,7 +65,7 @@ const updateCategory = async (req, res) => {
       console.log('existData:',existData);
       if (existData) {
   
-        console.log("sdfghjk");
+      
         const {Name,Description,is_list}=req.body
 
         const updatedCategory = await Category.findByIdAndUpdate(categoryId,

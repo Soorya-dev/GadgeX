@@ -1,9 +1,6 @@
-// const { ObjectId } = require('mongodb');
 const mongoose = require("mongoose");
 
-
 const orderModel = new mongoose.Schema({
-
   user: {
     type: mongoose.Types.ObjectId,
     ref: 'User',
@@ -28,7 +25,6 @@ const orderModel = new mongoose.Schema({
         type: String,
         required: true,
       },
-    
       quantity: {
         type: Number,
         required: true,
@@ -51,7 +47,6 @@ const orderModel = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  
   status: {
     type: String,
     required: true,
@@ -61,7 +56,5 @@ const orderModel = new mongoose.Schema({
     default: 0,
   },
 });
-
-
 
 module.exports = mongoose.model("Order", orderModel);

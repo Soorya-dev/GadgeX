@@ -1,138 +1,102 @@
 <%-include('../layoutUser/header.ejs')%>
-      
 
- 		   <main class="main">
-            <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
-                <div class="container">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Login</li>
-                    </ol>
-                </div><!-- End .container -->
-            </nav><!-- End .breadcrumb-nav -->
-<div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17" style="">
-    <div class="container">
-        <div class="form-box">
-            <div class="form-tab">
-                <ul class="nav nav-pills nav-fill" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="register-tab-2" data-toggle="tab" href="#register-2" role="tab" aria-controls="register-2" aria-selected="true">Sign In</a>
-                    </li>
-                </ul>
+<main class="main">
+    <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Login</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
 
-                <div class="tab-content">
-                    <div class="tab-pane fade show active" id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
-                <form method="post" id="formblock">
-    <!-- Your existing form fields go here -->
-    <div class="form-group">
-        <label for="register-email-2">Your email address *</label>
-        <input type="email" class="form-control" id="email" name="email" required>
-        <span id="emailError" style="color: red;"></span><br>
-    </div>
+    <div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17">
+        <div class="container">
+            <div class="form-box">
+                <div class="form-tab">
+                    <ul class="nav nav-pills nav-fill" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="register-tab-2" data-toggle="tab" href="#register-2" role="tab" aria-controls="register-2" aria-selected="true">Sign In</a>
+                        </li>
+                    </ul>
 
-    <div class="form-group">
-        <label for="register-password-2">Password *</label>
-        <input type="password" class="form-control" id="password" name="password" required>
-        <span id="passwordError" style="color: red;"></span><br>
-    </div><!-- End .form-group -->
-    <span id="current-time"></span>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
+                            <form method="post" id="formblock">
+                                <div class="form-group">
+                                    <label for="register-email-2">Your email address *</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                    <span id="emailError" style="color: red;"></span><br>
+                                </div>
+<script>// Get the email input element
+    const emailInput = document.getElementById('email');
+    
+    // Add an event listener to check when the input value changes
+    emailInput.addEventListener('input', () => {
+        // Log the value to the console
+        console.log(emailInput.value);
+    });
+    </script>
+                                <div class="form-group">
+                                    <label for="register-password-2">Password *</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                    <span id="passwordError" style="color: red;"></span><br>
+                                </div><!-- End .form-group -->
+                                <span id="current-time"></span>
 
-    <div class="form-footer">
-        <button type="submit" class="btn btn-outline-primary-2" id="signInButton">
-            <span>SIGN IN</span>
-            <i class="icon-long"></i>
-        </button>
-        <!-- Add Forgot Password link -->
-        <a href="/ForgotPassword" class="forgot-password-link">Forgot Password?</a>
-    </div>
-</form>
-
+                                <div class="form-footer">
+                                    <button type="submit" class="btn btn-outline-primary-2" id="signInButton">
+                                        <span>SIGN IN</span>
+                                        <i class="icon-long"></i>
+                                    </button>
+                                    <!-- Add Forgot Password link -->
+                                    <a href="/forgotPassword" class="forgot-password-link">Forgot Password?</a>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-                <!-- Add Sign Up link below the form -->
-                <div class="form-choice">
-                    <p class="text-center">Don't have an account? <a href="/register">Sign Up</a></p>
-                </div>
-            </div><!-- End .form-tab -->
-        </div><!-- End .form-box -->
-    </div><!-- End .container -->
-</div><!-- End .login-page section-bg -->
-								    		</div>End .col-6
-								    	</div>
-							    	</div><!-- End .form-choice -->
-							    </div><!-- .End .tab-pane -->
-							</div><!-- End .tab-content -->
-						</div><!-- End .form-tab -->
-            		</div><!-- End .form-box -->
-            	</div><!-- End .container -->
-            </div><!-- End .login-page section-bg -->
-        </main><!-- End .main -->
-
-
-<!-- Add this script at the end of your HTML body -->
+                    <!-- Add Sign Up link below the form -->
+                    <div class="form-choice">
+                        <p class="text-center">Don't have an account? <a href="/register">Sign Up</a></p>
+                    </div>
+                </div><!-- End .form-tab -->
+            </div><!-- End .form-box -->
+        </div><!-- End .container -->
+    </div><!-- End .login-page section-bg -->
+</main><!-- End .main -->
 
 <script>
-
-  
     document.getElementById('formblock').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent form submission
 
         // Get form data
-        
-        const email = document.getElementById('email').value
-        const password = document.getElementById('password').value
-        const formData = {
-          email,password
-        }
-console.log(formData);
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const formData = { email, password };
 
-fetchData(formData)
-
-
-        // Make AJAX request
-     
-        // .then(response => response.json())
-        // .then(data => {
-        //     // Handle response
-        //     console.log("data",dat);
-        //     if(data.success){
-        //         return window.location.reload()
-        //     }
-        //     if (data.error) {
-        //         // Show error message
-        //         document.getElementById('emailError').textContent = data.error;
-        //     }else{
-        //       window.location.href='/'
-        //     }
-        // }) 
-        // .catch(error => {
-        //     console.error('Error:', error);
-        // });
+        fetchData(formData);
     });
 
-
-    async function fetchData(formData){
-        const data= await fetch('/login', {
+    async function fetchData(formData) {
+        const response = await fetch('/login', {
             method: 'POST',
-             headers: {
-    'Content-Type': 'application/json' 
-  },
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(formData)
-        })
-const newData=await data.json()
-if(newData.success){
-                return window.location.reload()
-            }
-            if (newData.error) {
-                // Show error message
-                document.getElementById('emailError').textContent = newData.error;
-            }else{
-              window.location.href='/'
-            }
+        });
 
-
-  }
+        const newData = await response.json();
+        if (newData.success) {
+            return window.location.reload();
+        }
+        if (newData.error) {
+            document.getElementById('emailError').textContent = newData.error;
+        } else {
+            window.location.href = '/';
+        }
+    }
 </script>
 
 <%-include('../layoutUser/footer.ejs')%>

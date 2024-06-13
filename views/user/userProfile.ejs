@@ -1,282 +1,354 @@
-<%-include('../layoutUser/header.ejs')%>
-    <main class="main">
-       
+<%- include('../layoutUser/header.ejs') %>
+<style>/* Style for orders section */
+    .order {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .order h2 {
+      color: #333;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .order p {
+      margin-bottom: 5px;
+    }
+    
+    .order ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    
+    .order ul li {
+      margin-bottom: 5px;
+    }
+    
+    /* Style for add address button */
+    .btn-add-address {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    
+    .btn-add-address:hover {
+      background-color: #0056b3;
+    }
+    
+    /* Style for modal form */
+    .modal-content {
+      border-radius: 10px;
+    }
+    
+    .modal-title {
+      color: #333;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    
+    .modal-body .form-group label {
+      font-weight: bold;
+    }
+    
+    .modal-body .form-control {
+      border-radius: 5px;
+    }
+    
+    /* Style for save changes button */
+    .btn-save-changes {
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    
+    .btn-save-changes:hover {
+      background-color: #218838;
+    }
+    </style>
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title">My Account<span>Shop</span></h1>
+        </div>
+    </div>
+    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                <li class="breadcrumb-item active" aria-current="page">My Account</li>
+            </ol>
+        </div>
+    </nav>
 
-        <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+    <div class="page-content">
+        <div class="dashboard">
             <div class="container">
-                <h1 class="page-title">My Account<span>Shop</span></h1>
-            </div><!-- End .container -->
-        </div><!-- End .page-header -->
-        <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
-            <div class="container">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">My Account</li>
-                </ol>
-            </div><!-- End .container -->
-        </nav><!-- End .breadcrumb-nav -->
+                <div class="row">
+                    <aside class="col-md-4 col-lg-3">
+                        <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard"
+                                    role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab"
+                                    aria-controls="tab-orders" aria-selected="false">Orders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab"
+                                    aria-controls="tab-downloads" aria-selected="false">Downloads</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab"
+                                    aria-controls="tab-address" aria-selected="false">Addresses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab"
+                                    aria-controls="tab-account" aria-selected="false">Account Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Sign Out</a>
+                            </li>
+                        </ul>
+                    </aside>
 
-        <div class="page-content">
-            <div class="dashboard">
-                <div class="container">
-                    <div class="row">
-                        <aside class="col-md-4 col-lg-3">
-                            <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab"
-                                        href="#tab-dashboard" role="tab" aria-controls="tab-dashboard"
-                                        aria-selected="true">Dashboard</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders"
-                                        role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads"
-                                        role="tab" aria-controls="tab-downloads" aria-selected="false">Downloads</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address"
-                                        role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account"
-                                        role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Sign Out</a>
-                                </li>
-                            </ul>
-                        </aside><!-- End .col-lg-3 -->
+                    <div class="col-md-8 col-lg-9">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel"
+                                aria-labelledby="tab-dashboard-link">
+                                <p>Hello <span class="font-weight-normal text-dark"><%= user.name %></span> (not <span
+                                        class="font-weight-normal text-dark"><%= user.name %></span>? <a href="#">Log
+                                        out</a>)<br>
+                                    From your account dashboard you can view your <a href="#tab-orders"
+                                        class="tab-trigger-link link-underline">recent orders</a>, manage your <a
+                                        href="#tab-address" class="tab-trigger-link">shipping and billing addresses</a>,
+                                    and <a href="#tab-account" class="tab-trigger-link">edit your password and account
+                                        details</a>.
+                                </p>
+                            </div>
 
-                        <div class="col-md-8 col-lg-9">
-                            <div class="tab-content">
-                                <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel"
-                                    aria-labelledby="tab-dashboard-link">
-                                    <p>Hello <span class="font-weight-normal text-dark">User</span> (not <span
-                                            class="font-weight-normal text-dark">User</span>? <a href="#">Log out</a>)
-                                        <br>
-                                        From your account dashboard you can view your <a href="#tab-orders"
-                                            class="tab-trigger-link link-underline">recent orders</a>, manage your <a
-                                            href="#tab-address" class="tab-trigger-link">shipping and billing
-                                            addresses</a>, and <a href="#tab-account" class="tab-trigger-link">edit your
-                                            password and account details</a>.
-                                    </p>
-                                </div><!-- .End .tab-pane -->
-
-                                <div class="tab-pane fade" id="tab-orders" role="tabpanel"
-                                    aria-labelledby="tab-orders-link">
-                                    <p>No order has been made yet.</p>
+                            <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+                                <div class="container">
+                                    <h1>Your Orders</h1>
+                                    <% if (orders && orders.length > 0) { %>
+                                    <% orders.forEach(order => { %>
+                                    <div class="order">
+                                        <h2>Order ID: <%= order._id %></h2>
+                                        <p><strong>Date:</strong> <%= order.Date.toDateString() %></p>
+                                        <p><strong>Total Amount:</strong> $<%= order.subtotal.toFixed(2) %></p>
+                                        <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                                        <h3>Products</h3>
+                                        <ul>
+                                            <% order.product.forEach(product => { %>
+                                            <li><%= product.productId.name %> - <%= product.quantity %> x $<%= product.price.toFixed(2) %> = $<%= (product.quantity * product.price).toFixed(2) %></li>
+                                            <% }); %>
+                                        </ul>
+                                    </div>
+                                    <% }); %>
+                                    <% } else { %>
+                                    <p>No orders have been made yet.</p>
                                     <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
                                             class="icon-long-arrow-right"></i></a>
-                                </div><!-- .End .tab-pane -->
+                                    <% } %>
+                                </div>
+                            </div>
 
-                                <div class="tab-pane fade" id="tab-downloads" role="tabpanel"
-                                    aria-labelledby="tab-downloads-link">
-                                    <p>No downloads available yet.</p>
-                                    <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
-                                            class="icon-long-arrow-right"></i></a>
-                                </div><!-- .End .tab-pane -->
+                            <div class="tab-pane fade" id="tab-downloads" role="tabpanel"
+                                aria-labelledby="tab-downloads-link">
+                                <p>No downloads available yet.</p>
+                                <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
+                                        class="icon-long-arrow-right"></i></a>
+                            </div>
 
-                                <div class="tab-pane fade" id="tab-address" role="tabpanel"
-                                    aria-labelledby="tab-address-link">
-                                    <p>The following addresses will be used on the checkout page by default.</p>
-
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <div class="card card-dashboard">
-                                                <div class="card-body">
-                                                    <h3 class="card-title">Billing Address</h3>
-                                                    <% address.forEach(address => { %>
-                                                    <p>
-                                                        <%= address.name %><br>
-                                                        <%= address.houseName %><br>
-                                                        <%= address.street %><br>
-                                                        <%= address.city %>, <%= address.state %> <%= address.pincode %><br>
-                                                        <%= address.mobile %><br>
-                                                        <%= address.user %><br>
-                                                        <a href="#">Edit <i class="icon-edit"></i></a>
-                                                    </p>
-                                                    <% }); %>
+                            <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
+                                <p>The following addresses will be used on the checkout page by default.</p>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="card card-dashboard">
+                                            <div class="card-body">
+                                                <h3 class="card-title">Billing Address</h3>
+                                                <% address.forEach(addr => { %>
+                                                <p>
+                                                    <%= addr.name %><br>
+                                                    <%= addr.houseName %><br>
+                                                    <%= addr.street %><br>
+                                                    <%= addr.city %>, <%= addr.state %> <%= addr.pincode %><br>
+                                                    <%= addr.mobile %><br>
+                                                    <%= addr.user %><br>
+                                                    <a href="#">Edit <i class="icon-edit"></i></a>
+                                                </p>
+                                                <% }); %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="card card-dashboard">
+                                            <div class="card-body">
+                                                <h3 class="card-title">Shipping Address</h3>
+                                                <p>You have not set up this type of address yet.<br>
+                                                    <a href="#">Edit <i class="icon-edit"></i></a>
+                                                </p>
+                                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                    data-target="#exampleModalCenter">Add Address</button>
+                                                <div class="modal fade" id="exampleModalCenter" tabindex="-1"
+                                                    role="dialog" aria-labelledby="exampleModalCenterTitle"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalCenterTitle">Add
+                                                                    Address</h5>
+                                                                <button type="button" class="close"
+                                                                    data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form action="#" id="addAddressForm" class="mt-4">
+                                                                    <div class="form-group">
+                                                                        <label for="name">Name:</label>
+                                                                        <input type="text" id="name" name="name"
+                                                                            class="form-control" required>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="mobile">Mobile:</label>
+                                                                        <input type="number" id="mobile" name="mobile"
+                                                                            class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="houseName">House Name:</label>
+                                                                        <input type="text" id="houseName"
+                                                                            name="houseName" class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="street">Street:</label>
+                                                                        <input type="text" id="street" name="street"
+                                                                            class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="landmark">Landmark:</label>
+                                                                        <input type="text" id="landmark"
+                                                                            name="landmark" class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="pincode">Pincode:</label>
+                                                                        <input type="number" id="pincode" name="pincode"
+                                                                            class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="city">City:</label>
+                                                                        <input type="text" id="city" name="city"
+                                                                            class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="state">State:</label>
+                                                                        <input type="text" id="state" name="state"
+                                                                            class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group form-check">
+                                                                        <input type="checkbox" id="default" name="default"
+                                                                            class="form-check-input">
+                                                                        <label for="default" class="form-check-label">Default
+                                                                            Address</label>
+                                                                    </div>
+                                                                    <button type="submit"
+                                                                        class="btn btn-primary btn-block">Add
+                                                                        Address</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-
-
-                                        <div class="col-lg-6">
-                                            <div class="card card-dashboard">
-                                                <div class="card-body">
-                                                    <h3 class="card-title">Shipping Address</h3><!-- End .card-title -->
-
-                                                    <p>You have not set up this type of address yet.<br>
-                                                        <a href="#">Edit <i class="icon-edit"></i></a>
-                                                    </p>
-
-
-
-
-
-                                                    <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                        data-target="#exampleModalCenter">
-                                                       add address
-                                                    </button>
-                                                    <div class="modal fade" id="exampleModalCenter" tabindex="-1"
-                                                        role="dialog" aria-labelledby="exampleModalCenterTitle"
-                                                        aria-hidden="true">
-                                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    
-                                                                    <button type="button" class="close"
-                                                                        data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                    <div class="container mt-5">
-                                                                        <h1 class="text-center">Add Address</h1>
-                                                                        <form action="#" id="addAddressForm" class="mt-4">
-                                                                            <div class="form-group">
-                                                                                <label for="name">Name:</label>
-                                                                                <input type="text" id="name" name="name" class="form-control" required>
-                                                                            </div>
-                                                                           
-
-                                                                            
-                                                                            <div class="form-group">
-                                                                                <label for="mobile">Mobile:</label>
-                                                                                <input type="number" id="mobile" name="mobile" class="form-control">
-                                                                            </div>
-                                                                            <div class="form-group">
-                                                                                <label for="houseName">House Name:</label>
-                                                                                <input type="text" id="houseName" name="houseName" class="form-control">
-                                                                            </div>
-                                                                            <div class="form-group">
-                                                                                <label for="street">Street:</label>
-                                                                                <input   type="text" id="street" name="street" class="form-control">
-                                                                            </div>
-                                                                            <div class="form-group">
-                                                                                <label for="landmark">Landmark:</label>
-                                                                                <input type="text" id="landmark" name="landmark" class="form-control">
-                                                                            </div>
-                                                                            <div class="form-group">
-                                                                                <label for="pincode">Pincode:</label>
-                                                                                <input type="numbergggg" id="pincode" name="pincode" class="form-control">
-                                                                            </div>
-                                                                            <div class="form-group">
-                                                                                <label for="city">City:</label>
-                                                                                <input type="text" id="city" name="city" class="form-control">
-                                                                            </div>
-                                                                            <div class="form-group">
-                                                                                <label for="state">State:</label>
-                                                                                <input type="text" id="state" name="state" class="form-control">
-                                                                            </div>
-                                                                            <div class="form-group form-check">
-                                                                                <input type="checkbox" id="default" name="default" class="form-check-input">
-                                                                                <label for="default" class="form-check-label">Default Address</label>
-                                                                            </div>
-                                                                            <button type="submit" class="btn btn-primary btn-block">Add Address</button>
-                                                                        </form>
-                                                                    </div>
-                                                                <div class="modal-body">
-                                                                    ...
-                                                                </div>
-                                                             
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-
-
-
-
-
-
-                                                </div><!-- End .card-body -->
-                                            </div><!-- End .card-dashboard -->
-                                        </div><!-- End .col-lg-6 -->
-                                    </div><!-- End .row -->
-                                </div><!-- .End .tab-pane -->
-
-                                <div class="tab-pane fade" id="tab-account" role="tabpanel"
-                                    aria-labelledby="tab-account-link">
-                                    <form action="#">
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <label>First Name *</label>
-                                                <input type="text" class="form-control" required>
-                                            </div><!-- End .col-sm-6 -->
-
-                                            <div class="col-sm-6">
-                                                <label>Last Name *</label>
-                                                <input type="text" class="form-control" required>
-                                            </div><!-- End .col-sm-6 -->
-                                        </div><!-- End .row -->
-
-                                        <label>Display Name *</label>
-                                        <input type="text" class="form-control" required>
-                                        <small class="form-text">This will be how your name will be displayed in the
-                                            account section and in reviews</small>
-
-                                        <label>Email address *</label>
-                                        <input type="email" class="form-control" required>
-
-                                        <label>Current password (leave blank to leave unchanged)</label>
-                                        <input type="password" class="form-control">
-
-                                        <label>New password (leave blank to leave unchanged)</label>
-                                        <input type="password" class="form-control">
-
-                                        <label>Confirm new password</label>
-                                        <input type="password" class="form-control mb-2">
-
-                                        <button type="submit" class="btn btn-outline-primary-2">
-                                            <span>SAVE CHANGES</span>
-                                            <i class="icon-long-arrow-right"></i>
-                                        </button>
-                                    </form>
-                                </div><!-- .End .tab-pane -->
+                                </div>
                             </div>
-                        </div><!-- End .col-lg-9 -->
-                    </div><!-- End .row -->
-                </div><!-- End .container -->
-            </div><!-- End .dashboard -->
-        </div><!-- End .page-content -->
-    </main>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
-    <script>
-        $(document).ready(function() {
-            $('#addAddressForm').on('submit', function(e) {
-                e.preventDefault();
-    
-                var formData = new FormData(this);
-                var formEntries = {};
-    
-                formData.forEach(function(value, key) {
-                    formEntries[key] = value;
-                });
-                console.log(formEntries);
-                $.ajax({
-                    type: 'POST',
-                    url: '/addAddress',
-                    contentType: 'application/json',
-                    data: JSON.stringify(formEntries),
-                    success: function(response) {
-                        alert('Address added successfully');
-                        $('#exampleModalCenter').modal('hide');
-                        $('#addAddressForm')[0].reset();
-                    },
-                    error: function(error) {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
-                    }
-                });
+                            <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
+                                <form action="#">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label>First Name *</label>
+                                            <input type="text" class="form-control" required>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>Last Name *</label>
+                                            <input type="text" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <label>Display Name *</label>
+                                    <input type="text" class="form-control" required>
+                                    <small class="form-text">This will be how your name will be displayed in the account
+                                        section and in reviews</small>
+                                    <label>Email address *</label>
+                                    <input type="email" class="form-control" required>
+                                    <label>Current password (leave blank to leave unchanged)</label>
+                                    <input type="password" class="form-control">
+                                    <label>New password (leave blank to leave unchanged)</label>
+                                    <input type="password" class="form-control">
+                                    <label>Confirm new password</label>
+                                    <input type="password" class="form-control mb-2">
+                                    <button type="submit" class="btn btn-outline-primary-2">
+                                        <span>SAVE CHANGES</span>
+                                        <i class="icon-long-arrow-right"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#addAddressForm').on('submit', function(e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+            var formEntries = {};
+
+            formData.forEach(function(value, key) {
+                formEntries[key] = value;
+            });
+            console.log(formEntries);
+            $.ajax({
+                type: 'POST',
+                url: '/addAddress',
+                contentType: 'application/json',
+                data: JSON.stringify(formEntries),
+                success: function(response) {
+                    alert('Address added successfully');
+                    $('#exampleModalCenter').modal('hide');
+                    $('#addAddressForm')[0].reset();
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                }
             });
         });
-    </script>
-    
-    <%-include('../layoutUser/footer.ejs')%>
+    });
+</script>
+
+<%- include('../layoutUser/footer.ejs') %>

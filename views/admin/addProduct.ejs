@@ -4,18 +4,19 @@
       <div class="col-9">
         <div class="content-header">
           <h2>Add New Product</h2>
-          <div>
+          <!-- <div>
             <button class="btn btn-light rounded font-sm mr-5 text-body hover-up">Save to draft</button>
-          </div>
+          </div> -->
         </div>
       </div>
-      <div class="col-lg-6">
+      <div class="col-12">
         <div class="card mb-4">
           <div class="card-header">
-            <h4>Basic</h4>
+            <h4>Basic Details of Your Product</h4>
           </div>
           <div class="card-body">
-            <form action="/admin/products/add" method="post" enctype="multipart/form-data">
+            <form action="/admin/products/add" method="post" enctype="multipart/form-data" id="productForm">
+
               <div class="mb-4">
                 <label for="product_name" class="form-label">Product title</label>
                 <input type="text" placeholder="$" class="form-control" name="productname"
@@ -29,9 +30,13 @@
               <div class="col-sm-6 mb-3">
                 <label class="form-label">Category</label>
                 <select class="form-select" name="category">
-                  <option>Mobiles</option>
-                  <option>Laptops</option>
-                  <option>Watches</option>
+                  <% category.forEach(cat=> {%>
+                    <option value="<%=cat._id  %>">
+                      <%= cat.name %>
+                    </option>
+
+                    <%}); %>
+
 
                 </select>
               </div>
@@ -52,52 +57,215 @@
                   </div>
                 </div>
               </div>
-              <div class="mb-4">
-                <label class="form-label">Product image</label>
-                <input type="file" name="productImages" class="form-control" id="productImages" multiple required />
+
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h4>Media</h4>
+                </div>
+                <div class="card-body">
+                  <%for(let i=0; i < 4; i +=2) {%>
+                    <div class="row">
+                      <div class="input-upload  col-6">
+
+                        <div class="box">
+                          <input class="form-control form-image" type="file" id="file-input<%=i%>" data-id="<%=i%>"
+                            accept="image/*" />
+                        </div>
+                        <!-- Right box for cropped image preview -->
+                        <div class="box-2 img-result row align-items-center justify-content-center ">
+                          <img style="display: none;" id="previewImg<%=i%>" class="cropped" src="" alt="">
+                        </div>
+                        <div class="box-">
+                          <div class="result"></div>
+                        </div>
+                      </div>
+                      <div class="input-upload col-6">
+
+
+                        <div class="box">
+                          <input class="form-control form-image" type="file" id="file-input<%=i+1%>" data-id="<%=i+1%>"
+                            accept="image/*" />
+                        </div>
+                        <!-- Right box for cropped image preview -->
+                        <div class="box- img-result row align-items-center justify-content-center">
+                          <img style="display: none;" id="previewImg<%=i+1%>" class="cropped" src="" alt="">
+                        </div>
+                        <div class="box-">
+                          <div class="result"></div>
+                        </div>
+
+                      </div>
+                    </div>
+                    <%}%>
+                </div>
+                <div class="row align-items-center justify-content-center">
+
+                  <button type="submit"
+                    class="btn btn-primary w-25 mb-3 justify-content-center rounded font-sm hover-up">Publish</button>
+
+                </div>
               </div>
-              <div id="imagePreview" class="d-flex flex-wrap"></div>
-              
-              <button class="btn btn-md rounded font-sm hover-up" type="submit">Publish</button>
+
+
+
             </form>
           </div>
         </div>
       </div>
     </div>
+
+
+    <%for(let i=0; i < 4; i++) {%>
+
+      <div class="modal fade" id="imageModal<%=i%>" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Image Crop</h1>
+              <button type="button" class="btn-close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="imagecrop<%=i%> width-100">
+
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" id="cropButton<%=i%>" class="btn btn-primary">Crop</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <%}%>
+
+
+
   </section>
 
   <script>
-    document.getElementById('productImages').addEventListener('change', function(event) {
-  const files = event.target.files;
-  const previewContainer = document.getElementById('imagePreview');
-  previewContainer.innerHTML = ''; // Clear any existing previews
+    document.getElementById('productImages').addEventListener('change', function (event) {
+      const files = event.target.files;
+      const previewContainer = document.getElementById('imagePreview');
+      previewContainer.innerHTML = ''; // Clear any existing previews
 
-  for (const file of files) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const imgElement = document.createElement('img');
-      imgElement.src = e.target.result;
-      imgElement.style.width = '100px'; // Adjust the size as needed
-      imgElement.style.margin = '10px';
-      previewContainer.appendChild(imgElement);
-    };
-    reader.readAsDataURL(file);
+      for (const file of files) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const imgElement = document.createElement('img');
+          imgElement.src = e.target.result;
+          imgElement.style.width = '100px'; // Adjust the size as needed
+          imgElement.style.margin = '10px';
+          previewContainer.appendChild(imgElement);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+  const croppers = [];
+
+  document.querySelectorAll('.form-image').forEach(item => {
+    item.addEventListener('change', function previewImage(event) {
+      let element = event.target;
+      let number = element.getAttribute('data-id');
+      let cropper;
+
+      let imageCrop = document.querySelector(`.imagecrop${number}`);
+      let imagePreview = document.getElementById(`previewImg${number}`);
+
+      if (element.files && element.files.length > 0) {
+        let reader = new FileReader();
+        reader.onload = function (e) {
+          let img = document.createElement('img');
+          img.id = 'image';
+          img.src = e.target.result;
+          imageCrop.appendChild(img);
+
+          cropper = new Cropper(img, {
+            viewMode: 0,
+            dragMode: 'move',
+            responsive: true,
+            rotatable: true,
+            scalable: true,
+            cropBoxResizable: true,
+            initialAspectRatio: 1 / 1,
+            minContainerWidth: 450,
+            minContainerHeight: 500,
+            minCanvasHeight: 500,
+            minCanvasWidth: 500,
+          });
+        };
+        reader.readAsDataURL(element.files[0]);
+
+        const cropButton = document.getElementById(`cropButton${number}`);
+        cropButton.addEventListener('click', function () {
+          let imgSrc = cropper.getCroppedCanvas().toDataURL('image/jpeg');
+          imagePreview.style.display = 'block';
+          imagePreview.src = imgSrc;
+          croppers.push(imgSrc);
+        });
+      }
+    });
+  });
+
+  document.getElementById('productForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    let formData = new FormData(e.target);
+
+    croppers.forEach((image, index) => {
+      let blob = dataURLToBlob(image);
+      formData.append(`croppedImage${index}`, blob, `croppedImage${index}.jpeg`);
+    });
+
+    fetch('/admin/addProduct', {
+      method: 'POST',
+      body: formData
+    }).then(response => response.json())
+      .then((data) => {
+        if (data.id) {
+          window.location.href = `/admin/variant?productId=${data.id}`;
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  });
+
+  function dataURLToBlob(dataURL) {
+    let binary = atob(dataURL.split(',')[1]);
+    const mimeString = dataURL.split(',')[0].split(":")[1].split(';')[0]
+    const ab = new ArrayBuffer(binary.length);
+    const ix = new Uint8Array(ab);
+
+    for (let i = 0; i < binary.length; i++) {
+      ix[i] = binary.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
   }
 });
 
   </script>
 
-  <style>
-    #imagePreview img {
-  max-width: 100px;
-  max-height: 100px;
-  margin: 10px;
-  border: 1px solid #ccc;
-  padding: 5px;
-  border-radius: 5px;
-}
 
-  </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

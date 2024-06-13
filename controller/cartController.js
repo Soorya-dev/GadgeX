@@ -24,7 +24,6 @@ const loadCart = async (req, res) => {
   }
 };
 
-
 const AddToCart = async (req, res) => {
   try {
     const userId = req.session.user_id;
@@ -61,10 +60,12 @@ const AddToCart = async (req, res) => {
 
     // Check if the product is already in the cart
     const productIndex = cart.product.findIndex(item => item.productId.toString() === productId);
+    let message;
     if (productIndex > -1) {
       // Product exists in the cart, update the quantity and total
       cart.product[productIndex].quantity += qty;
       cart.product[productIndex].total = cart.product[productIndex].quantity * cart.product[productIndex].price;
+      message = "Product quantity updated in cart";
     } else {
       // Product does not exist in the cart, add it
       cart.product.push({
@@ -74,6 +75,7 @@ const AddToCart = async (req, res) => {
         quantity: qty,
         total: product.price * qty
       });
+      message = "Product added to cart";
     }
 
     // Calculate and update the subtotal
@@ -81,10 +83,9 @@ const AddToCart = async (req, res) => {
 
     // Save the cart
     await cart.save();
-    res.status(200).json({ message: "Product added to cart", cart });
+    res.status(200).json({ success:true,message:"added to cart" });
   } catch (err) {
     console.error('Error adding product to cart:', err);
-    
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -134,9 +135,40 @@ const updateQuantity = async (req, res) => {
   }
 };
 
+const removeCart = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+    const { productId } = req.body;
+    console.log(productId, "cart product id");
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    let cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+      return res.status(404).json({ success: false, message: "Cart not found" });
+    }
+
+    const productIndex = cart.product.findIndex(item => item._id.toString() === productId);
+    console.log(productIndex);
+    if (productIndex > -1) {
+      cart.product.splice(productIndex, 1);
+      cart.subtotal = cart.product.reduce((total, item) => total + item.total, 0);
+      await cart.save();
+      return res.status(200).json({ success: true, message: "Product removed from cart", cart });
+    } else {
+      return res.status(404).json({ success: false, message: "Product not found in cart" });
+    }
+  } catch (error) {
+    console.error('Error removing product from cart:', error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
 
 module.exports = {
   loadCart,
   AddToCart,
-  updateQuantity
-}; 
+  updateQuantity,
+  removeCart
+};

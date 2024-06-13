@@ -10,21 +10,24 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background: url('background-image.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
 
         .container {
             max-width: 1200px;
             margin: 20px auto;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 2s ease-in-out;
         }
 
         h1 {
             text-align: center;
             color: #333;
+            animation: slideInFromTop 1s ease-in-out;
         }
 
         .order-details {
@@ -33,6 +36,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f9f9f9;
+            animation: fadeIn 2s ease-in-out 1s;
         }
 
         .order-details h2 {
@@ -53,6 +57,7 @@
             text-decoration: none;
             border-radius: 5px;
             transition: background-color 0.3s ease;
+            animation: pulse 1.5s infinite;
         }
 
         .btn:hover {
@@ -68,6 +73,38 @@
                 padding: 10px;
             }
         }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
 
@@ -76,10 +113,16 @@
         <h1>Order Placed Successfully!</h1>
         <div class="order-details">
             <h2>Order Details</h2>
-            <p><strong>Order ID:</strong> #123456</p>
-            <p><strong>Date:</strong> June 6, 2024</p>
-            <p><strong>Total Amount:</strong> $150.00</p>
-            <p><strong>Payment Method:</strong> Credit Card</p>
+            <p><strong>Order ID:</strong> {{order._id}}</p>
+            <p><strong>Date:</strong> {{order.Date}}</p>
+            <p><strong>Total Amount:</strong> ${{order.subtotal}}</p>
+            <p><strong>Payment Method:</strong> {{order.paymentMethod}}</p>
+            <h3>Products</h3>
+            <ul>
+                {{#each order.product}}
+                <li>{{this.name}} - {{this.quantity}} x ${{this.price}} = ${{this.total}}</li>
+                {{/each}}
+            </ul>
         </div>
         <div style="text-align: center; margin-top: 20px;">
             <a href="#" class="btn">Continue Shopping</a>
@@ -88,3 +131,4 @@
 </body>
 
 </html>
+

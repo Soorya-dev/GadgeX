@@ -297,6 +297,8 @@
 
 
     // JavaScript code for the front-end
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
 
 function addToCart(productId) {
@@ -322,6 +324,13 @@ const quantity=1
   })
   .then(data => {
     console.log(data.message);
+    Swal.fire({
+        icon: 'success',
+        title: 'Product Added to Cart',
+        text: ' Product has been added to your cart!',
+        showConfirmButton: false,
+        timer: 1500 // milliseconds
+    });
     // Handle success, e.g., show a success message to the user
   })
   .catch(error => {

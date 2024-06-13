@@ -5,6 +5,8 @@
 <!-- molla/index-3.html  22 Nov 2019 09:55:42 GMT -->
 
 <head>
+
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -35,6 +37,12 @@
     <link rel="stylesheet" href="/userCss/css/skins/skin-demo-3.css">
     <link rel="stylesheet" href="/userCss/css/demos/demo-3.css">
     <link rel="stylesheet" href="/userCss/css/myStyle.css">
+    
+   
+
+
+
+   
 </head>
 
 <body>
@@ -42,7 +50,7 @@
         <header class="header header-intro-clearance header-3">
             <div class="header-top">
                 <div class="container">
-                
+
 
                     <div class="header-right">
 
@@ -50,8 +58,8 @@
                             <li>
                                 <a href="#">Links</a>
                                 <ul>
-                                   
-                                   
+
+
                                     <% if (user) { %>
                                         <li>Welcome <%= user.name %>
                                         </li>
@@ -59,10 +67,10 @@
                                         <% } else { %>
                                             <li><a href="/login">Sign in</a></li>
                                             <% } %>
-                                                                            </ul>
-                                                                            <ul>
-                                                                                <li><a href="/userProfile" type="button">profile</a></li>
-                                                                            </ul>
+                                </ul>
+                                <ul>
+                                    <li><a href="/userProfile" type="button">profile</a></li>
+                                </ul>
                             </li>
                         </ul><!-- End .top-menu -->
                     </div><!-- End .header-right -->
@@ -85,8 +93,8 @@
 
                     <div class="header-center">
                         <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
-                            <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                            <form action="#" method="get">
+                            <a type="submit" class="search-toggle" role="button"><i class="icon-search"></i></a>
+                            <form action="/shop" method="get">
                                 <div class="header-search-wrapper search-wrapper-wide">
                                     <label for="q" class="sr-only">Search</label>
                                     <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>

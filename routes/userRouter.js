@@ -23,8 +23,8 @@ route.post("/verify-otp", userController.verifyOtp);
 route.post("/reSendOtp", userController.resendOtp);
 
 
-route.get('/forgotPassword', userController.ForgotPassword);
-route.post('/forgotPassword', userController.ForgotPassword);
+route.get('/forgotPassword', userController.getForgotPassword);
+route.post('/forgotPassword', userController.forgotPassword);
 route.get('/reset/:token', userController.resetPassword);
 route.post('/reset/:token', userController.resetPassword);
 
@@ -41,8 +41,7 @@ route.get("/logout", auth.isUserLogin, userController.loadLogout);
 route.get('/cart',  cartController.loadCart); 
 route.post('/cart', cartController.AddToCart);
 route.post('/updateQuantity',cartController.updateQuantity);
-// route.post("/updatecart", cartController.UpdateCart);
-// route.delete("/removecart",  cartController.removeCart);
+route.post("/removeCart",  cartController.removeCart);
 
 //user profile route
 route.get('/userProfile',  userController.loadUserProfile);
@@ -53,7 +52,7 @@ route.get('/addAddress',userController.addAddress)
 route.get('/checkout',orderController.loadCheckout)
 route.post('/checkoutAddress',orderController.checkoutAddress)
 route.post('/saveOrder', orderController.saveOrder);
-
+route.get('/getUserOrder',orderController.getUserOrder)
 route.get('/Successpage',orderController.orderSuccess)
 
 

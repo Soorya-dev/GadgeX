@@ -29,9 +29,12 @@
               <div class="col-sm-6 mb-3">
                 <label class="form-label">Category</label>
                 <select class="form-select" name="category">
-                  <option>Mobiles</option>
-                  <option>Laptops</option>
-                  <option>Watches</option>  
+                  <% category.forEach(cat => {%>
+                    <option value="<%=cat._id  %>"><%= cat.name %></option>
+ 
+                  <%}); %>
+                  
+
                 </select>
               </div>
               <div class="row">

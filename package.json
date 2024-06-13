@@ -58,7 +58,7 @@
     "semver": "^7.6.0",
     "set-function-length": "^1.2.2",
     "setprototypeof": "^1.2.0",
-    "sharp": "^0.33.3",
+    "sharp": "^0.33.4",
     "side-channel": "^1.0.6",
     "simple-swizzle": "^0.2.2",
     "statuses": "^2.0.1",

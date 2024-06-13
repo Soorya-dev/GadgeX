@@ -11,6 +11,7 @@ const auth = require("../middlewears/adminAuth");
 adminRouter.use(
   express.static(path.join(__dirname, "..", "public", "uploads"))
 );
+
 // Multer setup for file upload
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -30,6 +31,7 @@ adminRouter.get(
   adminController.adminLoginPage
 );
 adminRouter.post("/adminLogin", adminController.adminLogin);
+
 adminRouter.get(
   "/products",
   auth.isAdminLogin,
@@ -50,7 +52,6 @@ adminRouter.get(
   auth.isAdminLogin,
   adminController.adminDashboard
 );
-
 adminRouter.get(
   "/viewProducts",
   auth.isAdminLogin,
@@ -61,30 +62,24 @@ adminRouter.get(
   auth.isAdminLogin,
   productController.getEditProduct
 );
-
 adminRouter.post("/editProduct/:id", productController.editProduct);
 
-//category management
+// Category management
 adminRouter.get(
   "/categories",
   auth.isAdminLogin,
   categoryController.getCategoryController
 );
-//edit category
 adminRouter.get(
   "/editCategory/:id",
   auth.isAdminLogin,
   categoryController.editCategory
 );
 adminRouter.post("/updateCategory/:id", categoryController.updateCategory);
-//delete category
-adminRouter.get(
-  "/deleteCategory/:categoryId",
-  categoryController.deleteCategory
-);
-
-//create category
+adminRouter.get("/deleteCategory/:categoryId", categoryController.deleteCategory);
 adminRouter.post("/create-category", categoryController.createCategory);
+
+// User management
 adminRouter.get(
   "/userManagement",
   auth.isAdminLogin,
@@ -101,10 +96,16 @@ adminRouter.post(
   adminController.unblockUser
 );
 
-// adminRouter.post("/products/edit/:productId",upload.single("productImage"), productController.editProduct);
 adminRouter.get("/logout", adminController.adminLogout);
 
 adminRouter.post("/list-product/:productId", productController.listProduct);
 adminRouter.post("/unlist-product/:productId", productController.unlistProduct);
 
+// Order management
+adminRouter.get("/orders", auth.isAdminLogin, adminController.loadOrder);
+adminRouter.get("/orderDetails", auth.isAdminLogin, adminController.loadOrderDetails);
+adminRouter.post("/orders/update-status", auth.isAdminLogin, adminController.OrderStatus);
+adminRouter.post("/orders/cancel", auth.isAdminLogin, adminController.cancelOrder);
+
 module.exports = adminRouter;
+
