@@ -23,7 +23,7 @@ const securePassword = async (password) => {
 const userHome = async (req, res) => {
   try {
     const userId = req.session.user_id;
-    console.log("id:", userId);
+  
     const user = await User.findOne({ _id: userId });
 
     console.log("userId", userId);
@@ -63,19 +63,16 @@ const otpPage = async (req, res) => {
 
 const userRegistration = async (req, res) => {
   try {
-    console.log("body:", req.body);
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
     console.log("Generated ", otp);
 
-    // Replace sendOTP function with your actual sending logic
-
     const userExist = await User.findOne({ email: req.body.email });
-    // if (userExist) {
-    //   return res.render("user/login", { message: "User already exists" });
-    // }
+    if (userExist) {
+      return res.render("user/login", { message: "User already exists" });
+    }
 
     const spassword = await securePassword(req.body.password);
-    console.log(spassword);
+
     const user = new User({
       name: req.body.username,
       email: req.body.email,
@@ -87,18 +84,15 @@ const userRegistration = async (req, res) => {
     const userData = await user.save();
 
     if (userData) {
-      const user = await User.findOne({ email: req.body.email });
       const userOtp = new otpDb({
         otp: otp,
-        userId: user._id,
+        userId: userData._id,
       });
       await userOtp.save();
 
-      // Send OTP and wait for it to complete
       await sendOtp(req.body.email, otp);
 
-      // Render OTP verification page after OTP is sent
-      return res.json({ success: true, userId: user._id });
+      return res.json({ success: true, userId: userData._id });
     } else {
       return res.render("./user/login", {
         message: "Your registration has failed",
@@ -111,7 +105,6 @@ const userRegistration = async (req, res) => {
 };
 
 // Function to send OTP via email
-
 const sendOtp = async (email, otp) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -129,7 +122,6 @@ const sendOtp = async (email, otp) => {
       html: `<div>Your OTP: ${otp}</div>`,
     };
 
-    // Send mail with defined transport object
     const info = await transporter.sendMail(mailOptions);
     console.log("Message sent: %s", info.messageId);
     return info;
@@ -141,7 +133,7 @@ const sendOtp = async (email, otp) => {
 const resendOtp = async (req, res) => {
   try {
     const { userId } = req.body;
-    console.log("userId", userId);
+
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
     const userData = await User.findOne({ _id: userId });
     const { email } = userData;
@@ -160,21 +152,19 @@ const resendOtp = async (req, res) => {
 const verifyOtp = async (req, res) => {
   try {
     const { otp1, otp2, otp3, otp4 } = req.body;
-    newOtp = Number(otp1 + otp2 + otp3 + otp4);
-    console.log(req.body, newOtp);
+    const newOtp = Number(otp1 + otp2 + otp3 + otp4);
     const userId = req.body.userId;
-    console.log("userId", userId);
+
     const userOtp = await otpDb.findOne({ userId: userId });
     const user = await User.findOne({ _id: userId });
 
-    console.log(userOtp);
     if (!user) {
       return res.status(404).send("User not found");
     }
 
     const storedOtp = userOtp.otp;
     if (storedOtp === newOtp) {
-      user.otp = null;
+      userOtp.otp = null;
       user.isVerified = true;
       await user.save();
       req.session.user_id = user._id;
@@ -191,10 +181,9 @@ const verifyOtp = async (req, res) => {
 const userLoginPage = async (req, res) => {
   try {
     const userId = req.session.user_id;
-console.log();
+
     const user = await User.findOne({ _id: userId });
 
-    // Pass flash messages to the template
     res.render("./user/login", { user, message: req.flash });
   } catch (error) {
     console.log(error.message);
@@ -203,36 +192,26 @@ console.log();
 
 const userLogin = async (req, res) => {
   try {
-    console.log(req.body);
     const { email, password } = req.body;
-    console.log("body:", req.body);
 
-    // Check if email exists
     const user = await User.findOne({ email: email });
     if (!user) {
-      console.log("user not found");
       req.flash("error", "Invalid email or password");
       return res.redirect("/login");
     }
 
-    // Check if user is blocked
     if (user.isBlocked) {
-      console.log("blocked");
       req.flash("error", "User is Blocked");
       return res.redirect("/login");
     }
 
-    // Compare hashed password with login password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      console.log("password not match");
       req.flash("error", "Invalid email or password");
       return res.redirect("/login");
     }
 
-    // Login successful (set user in session)
     req.session.user_id = user._id;
-    console.log("userID:", req.session.user_id);
     return res.json({ success: true });
   } catch (error) {
     console.error(error.message);
@@ -243,31 +222,22 @@ const userLogin = async (req, res) => {
 
 const viewProduct = async (req, res) => {
   try {
-
-const search=req.query.q;
-if (search) {
-  filter.name = { $regex: '.*' + search + '.*', $options: 'i' }; // Case-insensitive regex search
-}
-
-
-
-    const user = req.session.user_id;
-    const { sortBy, filteredBy } = req.query; // Combine destructuring
-    console.log(filteredBy,"1234321");
-
-    let filter = {}; // Define the filter object
-
-    // Apply ID filter if filteredBy is provided
-    if (filteredBy) {
-      filter.category = filteredBy; // Filter products by category
+    const search = req.query.q;
+    if (search) {
+      filter.name = { $regex: '.*' + search + '.*', $options: 'i' };
     }
 
-    // Fetch products from the database using the filter
+    const user = req.session.user_id;
+    const { sortBy, filteredBy } = req.query;
+    let filter = {};
+
+    if (filteredBy) {
+      filter.category = filteredBy;
+    }
+
     const products = await Products.find(filter);
 
     let sortedProducts;
-
-    // Sorting logic
     switch (sortBy) {
       case "popularity":
         sortedProducts = products.sort((a, b) => b.popularity - a.popularity);
@@ -295,7 +265,6 @@ if (search) {
         break;
     }
 
-    // Fetch categories for the dropdown
     const category = await Category.find({ is_list: true });
 
     res.render("user/shop", { products: sortedProducts, user, category });
@@ -305,15 +274,14 @@ if (search) {
   }
 };
 
-
 const singleProduct = async (req, res) => {
   try {
     const userId = req.session.user_id;
     const user = await User.findOne({ _id: userId });
-    let productId = req.params.id;
-    console.log("productId:", productId);
-    let singleProduct = await Products.findOne({ _id: productId });
-    console.log("single ", singleProduct.name);
+    const productId = req.params.id;
+
+    const singleProduct = await Products.findOne({ _id: productId });
+
     res.render("./user/singleProduct", { singleProduct, user });
   } catch (error) {
     console.log(error.message);
@@ -328,28 +296,21 @@ const loadLogout = async (req, res) => {
     console.log("logout error", error.message);
   }
 };
+
 const loadUserProfile = async (req, res) => {
   try {
     const userId = req.session.user_id;
 
-    // Fetch the address data
     const address = await Address.find({ user: userId });
-    console.log("addresses", address);
 
-    // Fetch the user data
     const user = await User.findById(userId);
-    console.log("user profile", user);
+
     if (!user) {
       throw new Error("User not found");
     }
 
-    // Fetch the orders for the user
-    const orders = await Order.find({ user: userId }).populate(
-      "product.productId"
-    );
-    console.log("user orders", orders);
+    const orders = await Order.find({ user: userId }).populate("product.productId");
 
-    // Render the user profile template with the user, address, and orders data
     res.render("./user/userProfile", { userData: user, user, address, orders });
   } catch (error) {
     console.error("Error loading user profile:", error);
@@ -359,14 +320,12 @@ const loadUserProfile = async (req, res) => {
 
 const getForgotPassword = (req, res) => {
   try {
-    res.render("./user/forgotPassword")
+    res.render("./user/forgotPassword");
   } catch (error) {
-    
+    console.error(error.message);
   }
-}
+};
 
-
-// Handle the forgot password form submission
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
   console.log(`Received forgot password request for email: ${email}`);
@@ -381,8 +340,8 @@ const forgotPassword = async (req, res) => {
       console.log(`No user found with email: ${email}`);
       return res.status(400).send('No user with the email');
     }
-
     const resetToken = crypto.randomBytes(32).toString('hex');
+    console.log("tokensss",resetToken);
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
@@ -415,6 +374,7 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+
 // Render the reset password page
 const getResetPassword = async (req, res) => {
   try {
@@ -422,11 +382,12 @@ const getResetPassword = async (req, res) => {
       resetPasswordToken: req.params.token,
       resetPasswordExpires: { $gt: Date.now() },
     });
+    
 
     if (!user) {
       return res.status(400).send('Password reset token is invalid or has expired');
     }
-    res.render('resetPassword', { token: req.params.token }); // Ensure this matches your EJS file name
+    res.render('./user/resetPassword', { token: req.params.token }); // Ensure this matches your EJS file name
   } catch (err) {
     console.error(err);
     res.status(500).send('Internal Server Error');
@@ -442,18 +403,18 @@ const resetPassword = async (req, res) => {
       resetPasswordToken: token,
       resetPasswordExpires: { $gt: Date.now() },
     });
-
+console.log("user",user);
     if (!user) {
       return res.status(400).send('Password reset token is invalid or has expired.');
     }
+    const spassword = await securePassword(password);
 
     // Ensure you hash the password before saving
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-
+    user.password = spassword
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
-    await user.save();
+    const update = await user.save();
+    console.log("update",update);
 
     res.status(200).send('Password has been reset successfully');
   } catch (err) {
@@ -500,6 +461,10 @@ const addAddress = async (req, res) => {
   }
 };
 
+const loadErrorPage=async(req,res)=>{
+  res.render("./user/404")
+}
+
 module.exports = {
   userHome,
   singleProduct,
@@ -519,4 +484,5 @@ module.exports = {
   getResetPassword,
   forgotPassword,
   addAddress,
+  loadErrorPage
 };

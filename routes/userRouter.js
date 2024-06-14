@@ -25,7 +25,7 @@ route.post("/reSendOtp", userController.resendOtp);
 
 route.get('/forgotPassword', userController.getForgotPassword);
 route.post('/forgotPassword', userController.forgotPassword);
-route.get('/reset/:token', userController.resetPassword);
+route.get('/reset/:token', userController.getResetPassword);
 route.post('/reset/:token', userController.resetPassword);
 
 
@@ -54,6 +54,9 @@ route.post('/checkoutAddress',orderController.checkoutAddress)
 route.post('/saveOrder', orderController.saveOrder);
 route.get('/getUserOrder',orderController.getUserOrder)
 route.get('/Successpage',orderController.orderSuccess)
+
+//404 error
+route.get('/errorPage',userController.loadErrorPage)
 
 
 module.exports = route;

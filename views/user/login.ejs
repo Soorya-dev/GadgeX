@@ -86,6 +86,7 @@
             },
             body: JSON.stringify(formData)
         });
+        console.log('formData',formData);
 
         const newData = await response.json();
         if (newData.success) {

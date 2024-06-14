@@ -45,6 +45,14 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/', userRouter); // For user-facing routes (login, register, home)
 app.use('/admin', adminRouter); // For admin-facing routes
 
+
+//page not found error
+app.use((req,res,next)=>{
+  res
+  .status(404)
+  .render("./user/404");
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}`);

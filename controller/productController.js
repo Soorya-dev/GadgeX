@@ -65,6 +65,7 @@ const getAddProductForm = async (req, res) => {
 const addProduct = async (req, res) => {
   try {
     console.log("reqBody:", req.body);
+    console.log("req file:", req.files);
 
     const { category, productname, description, price } = req.body;
     const imagePaths = [];

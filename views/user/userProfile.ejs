@@ -153,7 +153,7 @@
                                         <h3>Products</h3>
                                         <ul>
                                             <% order.product.forEach(product => { %>
-                                            <li><%= product.productId.name %> - <%= product.quantity %> x $<%= product.price.toFixed(2) %> = $<%= (product.quantity * product.price).toFixed(2) %></li>
+                                            <li><%= product.productId?.name %> - <%= product.quantity %> x $<%= product.price.toFixed(2) %> = $<%= (product.quantity * product.price).toFixed(2) %></li>
                                             <% }); %>
                                         </ul>
                                     </div>

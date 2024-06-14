@@ -44,7 +44,7 @@ adminRouter.get(
 );
 adminRouter.post(
   "/products/add",
-  upload.array("productImages", 4),
+  upload.array("croppedImages", 4),
   productController.addProduct
 );
 adminRouter.get(
