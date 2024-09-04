@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Placed Successfully</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease-out;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .order-details {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .order-details h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .order-info p {
+            margin: 10px 0;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .product-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .product-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .product-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .product-price {
+            color: #e53935;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        .discount {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .total {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #e53935;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .btn {
+                display: block;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Order Placed Successfully!</h1>
+        <div class="order-details">
+            <h2>Order Details</h2>
+            <div class="order-info">
+                <p><strong>Order ID:</strong> <%= order._id %></p>
+                <p><strong>Date:</strong> <%= new Date(order.Date).toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' }) %></p>
+                <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                <p><strong>Subtotal:</strong> ₹<%= order.subtotal+order.discount %></p>
+                <% if (order.discount > 0) { %>
+                    <p class="discount"><strong>Discount:</strong> -₹<%= order.discount.toFixed(2) %></p>
+                <% } %>
+                <p class="total"><strong>Total Amount:</strong> ₹<%= order.total%>.00</p>
+            </div>
+        </div>
+        <div class="order-details">
+            <h2>Products</h2>
+            <ul class="product-list">
+                <% order.product.forEach(product => { 
+                    const price = product.productId.offerApplied ? product.productId.offerDetails.priceAfterOfferApplied : product.productId.price;
+                    const totalPrice = price * product.quantity;
+                %>
+                <li class="product-item">
+                    <span class="product-name"><%= product.productId.name %> (x<%= product.quantity %>)</span>
+                    <span class="product-price">₹<%= totalPrice.toFixed(2) %></span>
+                </li>
+                <% }); %>
+            </ul>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/" class="btn">Continue Shopping</a>
+        </div>
+    </div>
+</body>
+
+
+</html>

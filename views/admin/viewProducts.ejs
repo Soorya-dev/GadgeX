@@ -1,0 +1,173 @@
+<%- include('../layoutAdmin/header') %>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Products List</h2>
+            <p>Lorem ipsum dolor sit amet.</p>
+        </div>
+        <div>
+            <a href="/admin/products/add" class="btn btn-primary btn-sm rounded">Create new</a>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="example">
+                    <thead>
+                        <tr>
+                            <th>Images</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>List/Unlist</th>
+                            <th>Apply Offer</th> <!-- New Apply Offer Column -->
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (products.length > 0) { %>
+                            <% products.forEach(product => { %>
+                                <tr>
+                                    <td><img src="<%= product.image[0] %>" class="product-image img-sm img-thumbnail" alt="no image" /></td>
+                                    <td><h6 class="mb-0 title"><%= product.name %></h6></td>
+                                    <td><%= product.category?.name %></td>
+                                    <td>Rs:<%= product.price %></td>
+                                    <td id="stock_<%= product._id %>"><%= product.stock %></td>
+                                    <td><%= product.isListed ? 'Listed' : 'Unlisted' %></td>
+                                    <td class="text-center">
+                                        <% if (product.isListed) { %>
+                                            <form action="/admin/viewProducts/unlistProduct/<%= product._id %>" method="post">
+                                                <button type="submit" class="btn-md btn" style="background-color: red; color: white;">
+                                                    Unlist
+                                                </button>
+                                            </form>
+                                        <% } else { %>
+                                            <form action="/admin/viewProducts/listProduct/<%= product._id %>" method="post">
+                                                <button type="submit" class="btn-md btn" style="background-color: rgb(12, 232, 169); color: white;">
+                                                    List
+                                                </button>
+                                            </form>
+                                        <% } %>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm font-sm rounded btn-brand" onclick="applyOffer('<%= product._id %>')">
+                                            Apply Offer
+                                        </button>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="/admin/editProduct/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">
+                                            <i class="material-icons md-edit"></i> Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="9">No products found.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> 
+    <!-- Pagination Section -->
+    <div class="pagination">
+        <% if (totalPages > 1) { %>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+                        </li>
+                    <% } %>
+
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+
+                    <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        <% } %>
+    </div>
+</section>
+<%- include('../layoutAdmin/footer') %>
+
+<script>
+    function applyOffer(productId) {
+        console.log('Applying offer for product:', productId);
+
+        fetch(`/admin/getOffersForProduct/${productId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    Swal.fire({
+                        title: 'No Offers Available',
+                        text: 'There are no offers available for this product.',
+                        icon: 'info',
+                        showCloseButton: true
+                    });
+                    return;
+                }
+
+                let offerOptions = data.map(offer => `
+                    <div>
+                        <input type="radio" name="offer" value="${offer._id}" id="offer_${offer._id}">
+                        <label for="offer_${offer._id}">${offer.name} - ${offer.percentage}% off</label>
+                    </div>
+                `).join('');
+
+                Swal.fire({
+                    title: 'Available Offers',
+                    html: `<form id="offerForm">${offerOptions}</form>`,
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Apply Offer',
+                    preConfirm: () => {
+                        const selectedOffer = document.querySelector('input[name="offer"]:checked');
+                        if (selectedOffer) {
+                            return selectedOffer.value;
+                        } else {
+                            Swal.showValidationMessage('Please select an offer');
+                            return false;
+                        }
+                    }
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        const selectedOfferId = result.value;
+
+                        fetch(`/admin/applyOffer`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ productId, offerId: selectedOfferId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message) {
+                                Swal.fire('Success', data.message, 'success');
+                            } else {
+                                Swal.fire('Error', data.error || 'An unknown error occurred', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire('Error', 'Something went wrong: ' + error.message, 'error');
+                        });
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching offers:', error);
+            });
+    }
+</script>

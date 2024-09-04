@@ -1,0 +1,178 @@
+User
+- incorrect filter result count shown
+- combine search, sort and filter
+- ask for stronger password on password change
+- changing password shows JSON response
+- able to add to cart and order unlisted products
+- add to wishlist from product page
+- inconsistent currency unit
+- item price change isn’t reflected in cart
+- order detail page
+- clear cart after creating order 
+- add to cart button bypasses cart quantity validation
+- quantity validation in checkout and upon order creation
+- coupon remains applied even after order creation
+- insufficient wallet balance error not shown
+- able to view order success page of other users with order url
+- changes in address is reflected in past orders
+
+Admin
+- product input validation
+- coupon input validation 
+- coupon errors aren’t specific
+- offer management 
+- stock not reduced on order creation
+- admin order cancel not reflected in user side
+- admin order cancel doesn’t refund
+- export sales report
+
+- use git from command line
+
+
+
+
+<!-- Large modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Large modal</button>
+
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+       <div class="modal-body">
+                  <form id="addAddressForm" class="mt-4">
+                      <div class="form-group">
+                          <label for="name">Name:</label>
+                          <input type="text" id="name" name="name" class="form-control" required>
+                      </div>
+                      <div class="form-group">
+                          <label for="mobile">Mobile:</label>
+                          <input type="number" id="mobile" name="mobile" class="form-control">
+                      </div>
+                      <div class="form-group">
+                          <label for="houseName">House Name:</label>
+                          <input type="text" id="houseName" name="houseName" class="form-control">
+                      </div>
+                      <div class="form-group">
+                          <label for="street">Street:</label>
+                          <input type="text" id="street" name="street" class="form-control">
+                      </div>
+                      <div class="form-group">
+                          <label for="landmark">Landmark:</label>
+                          <input type="text" id="landmark" name="landmark" class="form-control">
+                      </div>
+                      <div class="form-group">
+                          <label for="city">City:</label>
+                          <input type="text" id="city" name="city" class="form-control">
+                      </div>
+                      <div class="form-group">
+                          <label for="pincode">Pincode:</label>
+                          <input type="text" id="pincode" name="pincode" class="form-control">
+                      </div>
+                  </form>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" form="addAddressForm" >Save changes</button>
+              </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Launch demo modal
+</button>
+
+
+
+
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+           <div class="modal-body">
+                  <form id="addAddressForm" class="mt-4">
+                      <div class="form-group">
+                          <label for="name">Name:</label>
+                          <input type="text" id="name" name="name" class="form-control" required>
+                      </div>
+                      <div class="form-group">
+                          <label for="mobile">Mobile:</label>
+                          <input type="number" id="mobile" name="mobile" class="form-control">
+                      </div>
+                      <div class="form-group">
+                          <label for="houseName">House Name:</label>
+                          <input type="text" id="houseName" name="houseName" class="form-control">
+                      </div>
+                      <div class="form-group">
+                          <label for="street">Street:</label>
+                          <input type="text" id="street" name="street" class="form-control">
+                      </div>
+                      <div class="form-group">
+                          <label for="landmark">Landmark:</label>
+                          <input type="text" id="landmark" name="landmark" class="form-control">
+                      </div>
+                      <div class="form-group">
+                          <label for="city">City:</label>
+                          <input type="text" id="city" name="city" class="form-control">
+                      </div>
+                      <div class="form-group">
+                          <label for="pincode">Pincode:</label>
+                          <input type="text" id="pincode" name="pincode" class="form-control">
+                      </div>
+                  </form>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" form="addAddressForm" >Save changes</button>
+              </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctxCombined = document.getElementById('combinedSalesChart').getContext('2d');
+        var chartLabelsWeek = <%- JSON.stringify(chartLabelsWeek) %>;
+        var chartDataWeek = <%- JSON.stringify(chartDataWeek) %>;
+        var chartLabelsMonth = <%- JSON.stringify(chartLabelsMonth) %>;
+        var chartDataMonth = <%- JSON.stringify(chartDataMonth) %>;
+        var chartLabelsYear = <%- JSON.stringify(chartLabelsYear) %>;
+        var chartDataYear = <%- JSON.stringify(chartDataYear) %>;
+
+      var ctxCombined = document.getElementById('combinedSalesChart').getContext('2d');
+        var chartLabelsWeek = JSON.parse('<%- JSON.stringify(chartLabelsWeek) %>');
+        var chartDataWeek = JSON.parse('<%- JSON.stringify(chartDataWeek) %>');
+        var chartLabelsMonth = JSON.parse('<%- JSON.stringify(chartLabelsMonth) %>');
+        var chartDataMonth = JSON.parse('<%- JSON.stringify(chartDataMonth) %>');
+        var chartLabelsYear = JSON.parse('<%- JSON.stringify(chartLabelsYear) %>');
+        var chartDataYear = JSON.parse('<%- JSON.stringify(chartDataYear) %>');

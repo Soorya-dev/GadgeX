@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- molla/index-3.html  22 Nov 2019 09:55:42 GMT -->
+
+<head>
+
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Molla - Bootstrap eCommerce Template</title>
+    <meta name="keywords" content="HTML5 Template">
+    <meta name="description" content="Molla - Bootstrap eCommerce Template">
+    <meta name="author" content="p-themes">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/userCss/images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/userCss/images/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/userCss/images/icons/favicon-16x16.png">
+    <link rel="manifest" href="/userCss/images/icons/site.html">
+    <link rel="mask-icon" href="/userCss/images/icons/safari-pinned-tab.svg" color="#666666">
+    <link rel="shortcut icon" href="/userCss/images/icons/favicon.ico">
+    <meta name="apple-mobile-web-app-title" content="Molla">
+    <meta name="application-name" content="Molla">
+    <meta name="msapplication-TileColor" content="#cc9966">
+    <meta name="msapplication-config" content="/userCss/images/icons/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="/userCss/vendor/line-awesome/line-awesome/line-awesome/css/line-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Plugins CSS File -->
+    <link rel="stylesheet" href="/userCss/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/userCss/css/plugins/owl-carousel/owl.carousel.css">
+    <link rel="stylesheet" href="/userCss/css/plugins/magnific-popup/magnific-popup.css">
+    <link rel="stylesheet" href="/userCss/css/plugins/jquery.countdown.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+  
+    <!-- Main CSS File -->
+    <link rel="stylesheet" href="/userCss/css/style.css">
+    <link rel="stylesheet" href="/userCss/css/skins/skin-demo-3.css">
+    <link rel="stylesheet" href="/userCss/css/demos/demo-3.css">
+    <link rel="stylesheet" href="/userCss/css/myStyle.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <!-- Bootstrap CSS -->
+      <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">  -->
+   
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <header class="header header-intro-clearance header-3">
+            <div class="header-top">
+                <div class="container">
+
+
+                    <div class="header-right">
+
+                        <ul class="top-menu">
+                            <li>
+                                <a href="#">Links</a>
+                                <ul>
+
+
+                                    <% if (user) { %>
+                                        <li>Welcome <%= user.name %>
+                                        </li>
+                                        <li><a href="/logout">Logout</a></li>
+                                        <% } else { %>
+                                            <li><a href="/login">Sign in</a></li>
+                                            <% } %>
+                                </ul>
+                                <ul>
+                                    <li><a href="/userProfile" type="button">profile</a></li>
+                                </ul>
+                            </li>
+                        </ul><!-- End .top-menu -->
+                    </div><!-- End .header-right -->
+
+                </div><!-- End .container -->
+            </div><!-- End .header-top -->
+
+            <div class="header-middle">
+                <div class="container">
+                    <div class="header-left">
+                        <button class="mobile-menu-toggler">
+                            <span class="sr-only">Toggle mobile menu</span>
+                            <i class="icon-bars"></i>
+                        </button>
+
+                        <style>
+                            .gadgex-unique-logo-2024 {
+                                font-family: 'Arial', sans-serif;
+                                font-size: 28px;
+                                font-weight: bold;
+                                color: #2c3e50;
+                                text-decoration: none;
+                                display: inline-block;
+                                padding: 5px 10px;
+                                border: 2px solid #2c3e50;
+                                border-radius: 8px;
+                                transition: all 0.3s ease;
+                            }
+                      
+                            .gadgex-unique-logo-2024:hover {
+                                background-color: #2c3e50;
+                                color: #ffffff;
+                            }
+                      
+                            .gadgex-unique-logo-2024 .highlight {
+                                color: #e74c3c;
+                            }
+                      
+                            .gadgex-unique-logo-2024:hover .highlight {
+                                color: #f39c12;
+                            }
+                        </style>
+                        <a href="/" class="gadgex-unique-logo-2024">
+                            Gadge<span class="highlight">X</span>
+                        </a>
+                    </div><!-- End .header-left -->
+
+                  <!-- Your header.ejs file -->
+        <div class="header-center">
+                <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
+                 <a type="submit" class="search-toggle" role="button"><i class="icon-search"></i></a>
+                 <form id="search-form" action="/shop" method="get">
+                    <div class="header-search-wrapper search-wrapper-wide">
+                <label for="q" class="sr-only">Search</label>
+                <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+                <input type="search" class="form-control" name="q" id="q"
+                    placeholder="Search product ..." required>
+                        </div><!-- End .header-search-wrapper -->
+                 </form>
+                 </div><!-- End .header-search -->
+        </div>
+
+
+                    <div class="header-right">
+                      
+
+                        <div class="wishlist">
+                            <a href="/wishlist" title="Wishlist">
+                                <div class="icon">
+                                    <i class="icon-heart-o"></i>
+                                    <span class="wishlist-count badge">3</span>
+                                </div>
+                                <p>Wishlist</p>
+                            </a>
+                        </div><!-- End .compare-dropdown -->
+
+                        <div class="dropdown cart-dropdown">
+                            <a href="/cart" class="dropdown-toggle" role="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false" data-display="static">
+                                <div class="icon">
+                                    <i class="icon-shopping-cart"></i>
+                                    <span class="cart-count">2</span>
+                                </div>
+                                <p>Cart</p>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right">
+                           
+
+                                <div class="dropdown-cart-action">
+                                    <a href="/cart" class="btn btn-primary">View Cart</a>
+                                    <a href="/checkout" class="btn btn-outline-primary-2"><span>Checkout</span><i
+                                            class="icon-long-arrow-right"></i></a>
+                                </div><!-- End .dropdown-cart-total -->
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .cart-dropdown -->
+                    </div><!-- End .header-right -->
+                </div><!-- End .container -->
+            </div><!-- End .header-middle -->
+
+            <div class="header-bottom sticky-header">
+                <div class="container">
+                    <div class="header-left">
+                   
+                    </div><!-- End .header-left -->
+
+                    <div class="header-center">
+                        <nav class="main-nav">
+                            <ul class="menu ">
+                                <li class="megamenu-container ">
+                                    <a href="/" class="sf-with">Home</a>
+
+
+                                </li>
+                                <li>
+                                    <a href="/shop" class="sf-with">Shop</a>
+
+
+                                </li>
+                               
+                                <li>
+                                    <a href="/about" class="sf-with-ul">About</a>
+                                   
+                                </li>
+                                <li>
+                                    <a href="blog.html" class="sf-with-ul">Blog</a>
+
+                                   
+                                </li>
+                               
+                            </ul><!-- End .menu -->
+                        </nav><!-- End .main-nav -->
+                    </div><!-- End .header-center -->
+
+                    <div class="header-right">
+                        <i class="la la-lightbulb-o"></i>
+                        <p>Clearance<span class="highlight">&nbsp;Up to 30% Off</span></p>
+                    </div>
+                </div><!-- End .container -->
+            </div><!-- End .header-bottom -->
+        </header><!-- End .header -->

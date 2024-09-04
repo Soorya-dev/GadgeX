@@ -1,0 +1,89 @@
+<%-include('../layoutAdmin/header')%>
+
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>s.NO</th>
+            <th>#ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Active</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach((user, index)=> { %>
+            <tr>
+              <td>
+                <%= index + 1 %>
+              </td>
+              <td><b>id:<%= user._id %></b></td>
+              <td>
+                <%= user.name %>
+              </td>
+              <td>
+                <%= user.email %>
+              </td>
+              <td>
+                <%= user.active ? 'Active' : 'Inactive' %>
+              </td>
+              <td>
+                <%= user.isBlocked ? 'Blocked' : 'Not Blocked' %>
+              </td>
+              <td class="text-end">
+                <% if (user.isBlocked) { %>
+                  <form id="unblockUserForm_<%= user._id %>" action="/admin/userManagement/<%= user._id %>/unblock"
+                    method="post">
+                    <button type="button" onclick="confirmUnblock('<%= user._id %>')"
+                      class="btn-md btn">Unblock</button>
+                  </form>
+                  <% } else { %>
+                    <form id="blockUserForm_<%= user._id %>" action="/admin/userManagement/<%= user._id %>/block"
+                      method="post">
+                      <button type="button" onclick="confirmBlock('<%= user._id %>')" class="btn-md btn " style="background-color: red;color: white;"    >Block</button>
+                    </form>
+                    <% } %>
+              </td>
+            </tr>
+            <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <!-- table-responsive//end -->
+  </div>
+
+  <%-include('../layoutAdmin/footer')%>
+    <script>
+      function confirmBlock(userId) {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'You are about to block this user.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, block it!',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.getElementById('blockUserForm_' + userId).submit();
+          }
+        });
+      }
+
+      function confirmUnblock(userId) {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'You are about to unblock this user.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, unblock it!',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.getElementById('unblockUserForm_' + userId).submit();
+          }
+        });
+      }
+    </script>

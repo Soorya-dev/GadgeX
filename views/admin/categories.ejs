@@ -1,0 +1,151 @@
+<%- include('../layoutAdmin/header') %>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Categories</h2>
+            <p>Add, edit, or delete a category</p>
+        </div>
+        <div>
+            <input type="text" placeholder="Search Categories" class="form-control bg-white" />
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <form action="/admin/create-category" method="post">
+                        <div class="mb-4">
+                            <label for="product_name" class="form-label">Name</label>
+                            <input type="text" placeholder="Type here" class="form-control" id="product_name" name="product_name" />
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Description</label>
+                            <textarea placeholder="Type here" class="form-control" name="description"></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Create category</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-9">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% category.forEach(item => { %>
+                                    <tr>
+                                        <td><%= item._id %></td>
+                                        <td><b><%= item.name %></b></td>
+                                        <td><%= item.description %></td>
+                                        <td>
+                                            <a class="btn btn-info btn-sm" href="/admin/editCategory/<%= item._id %>">Edit info</a>
+                                            <a class="btn btn-danger btn-sm" href="/admin/deleteCategory/<%= item._id %>">Delete</a>
+                                            <button onclick="ListCategory(event,'<%=item._id%>')" class="btn <%= item.isListed ? 'btn-warning' : 'btn-success' %> btn-sm">
+                                                <%= item.isListed ? 'Hide' : 'Show' %>
+                                            </button>
+                                            <button onclick="applyOffer('<%=item._id%>')" class="btn btn-primary btn-sm">
+                                                Apply Offer
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<%- include('../layoutAdmin/footer') %>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+const ListCategory = (e, itemId) => {
+    console.log('iam event', itemId);
+    axios.patch('/admin/listCategory', { categoryId: itemId }).then((res) => {
+        console.log('res', res.data);
+        if (res.data) {
+            location.reload();
+        }
+    });
+}
+
+const applyOffer = (categoryId) => {
+    console.log('Applying offer for category:', categoryId);
+
+    axios.get(`/admin/getOffersForCategory/${categoryId}`)
+        .then(response => {
+            console.log('Offers data:', response.data);
+            if (response.data.length === 0) {
+                Swal.fire({
+                    title: 'No Offers Available',
+                    text: 'There are no offers available for this category.',
+                    icon: 'info',
+                    showCloseButton: true
+                });
+                return;
+            }
+
+            let offerOptions = response.data.map(offer => `
+                <div>
+                    <input type="radio" name="offer" value="${offer._id}" id="offer_${offer._id}">
+                    <label for="offer_${offer._id}">${offer.name} - ${offer.percentage}% off</label>
+                </div>
+            `).join('');
+
+            Swal.fire({
+                title: 'Available Offers',
+                html: `
+                    <form id="offerForm">
+                        ${offerOptions}
+                    </form>
+                `,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Apply Offer',
+                preConfirm: () => {
+                    const selectedOffer = document.querySelector('input[name="offer"]:checked');
+                    if (selectedOffer) {
+                        return selectedOffer.value;
+                    } else {
+                        Swal.showValidationMessage('Please select an offer');
+                        return false;
+                    }
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const selectedOfferId = result.value;
+                    axios.post('/admin/applyCategoryOffer', { categoryId, offerId: selectedOfferId })
+                        .then(response => {
+                            console.log('Response data:', response.data);
+                            if (response.data.message) {
+                                Swal.fire('Success', response.data.message, 'success').then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('Error', response.data.error || 'An unknown error occurred', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error applying offer:', error);
+                            Swal.fire('Error', 'Something went wrong: ' + error.message, 'error');
+                        });
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching offers:', error);
+            Swal.fire('Error', 'Failed to fetch offers', 'error');
+        });
+}
+</script>

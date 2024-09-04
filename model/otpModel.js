@@ -6,7 +6,7 @@ const otpSchema = new mongoose.Schema({
         required: true
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId, // Assuming you have a User schema and storing user's ObjectId
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     createdAt: {

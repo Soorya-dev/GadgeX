@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Cancelled</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('background-image.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        h1 {
+            text-align: center;
+            color: #dc3545;
+            animation: slideInFromTop 1s ease-in-out;
+        }
+
+        .order-details {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            animation: fadeIn 2s ease-in-out 1s;
+        }
+
+        .order-details h2 {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .order-details p {
+            margin: 5px 0;
+            color: #777;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            animation: pulse 1.5s infinite;
+        }
+
+        .btn:hover {
+            background-color: #218838;
+        }
+
+        .message {
+            text-align: center;
+            font-size: 18px;
+            color: #dc3545;
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease-in-out 0.5s;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .order-details {
+                padding: 10px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Payment Cancelled</h1>
+        <p class="message"><%= message %></p>
+        <div class="order-details">
+            <h2>Order Details</h2>
+            <p><strong>Order ID:</strong> <%= order._id %></p>
+            <p><strong>Date:</strong> <%= new Date(order.Date).toDateString() %></p>
+            <p><strong>Total Amount:</strong> $<%= order.subtotal %></p>
+            <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+            <p><strong>Status:</strong> Payment Pending</p>
+            <h3>Products</h3>
+            <ul>
+                <% order.product.forEach(product => { %>
+                <li><%= product.productId.name %> - <%= product.quantity %> x $<%= (product.productId.offerApplied ? product.productId.offerDetails.priceAfterOfferApplied : product.productId.price).toFixed(2) %> = $<%= (product.quantity * (product.productId.offerApplied ? product.productId.offerDetails.priceAfterOfferApplied : product.productId.price)).toFixed(2) %></li>
+                <% }); %>
+            </ul>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/shop" class="btn">Continue Shopping</a>
+        </div>
+    </div>
+</body>
+
+</html>

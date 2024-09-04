@@ -1,0 +1,246 @@
+<%- include('../layoutAdmin/header') %>
+  <link rel="stylesheet" href="/cropper.css">
+  <link rel="stylesheet" href="/cropper.min.css">
+  <script src="/cropper.js"></script>
+  <script src="/cropper.min.js"></script>
+  <style>
+    .card-body img {
+
+      width: 15rem !important;
+      height: 10rem !important;
+      max-width: none !important;
+      margin: 5%;
+
+
+    }
+  </style>
+
+
+<section class="content-main">
+  <div class="row">
+    <div class="col-9">
+      <div class="content-header">
+        <h2>Add New Product</h2>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h4>Basic Details of Your Product</h4>
+        </div>
+        <div class="card-body">
+          <form id="productForm">
+            <div class="mb-4">
+              <label for="product_name" class="form-label">Product title</label>
+              <input type="text" placeholder="$" class="form-control" name="productname" id="product_name"
+                title="Price must be a number" required />
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Full description</label>
+              <textarea placeholder="Type here" class="form-control" rows="4" name="description"></textarea>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <label class="form-label">Category</label>
+              <select class="form-select" name="category">
+                <% category.forEach(cat=> {%>
+                  <option value="<%=cat._id  %>"><%= cat.name %></option>
+                <% }); %>
+              </select>
+            </div>
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="mb-4">
+                  <label class="form-label">Regular price</label>
+                  <input type="number" placeholder="$" class="form-control" name="price" pattern="\d+(\.\d{2})?"
+                    title="Price must be a number" required />
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="mb-4">
+                  <label class="form-label">Stock</label>
+                  <input placeholder="$" type="number" class="form-control" name="stock" />
+                </div>
+              </div>
+            </div>
+            <div class="card mb-4">
+              <div class="card-header">
+                <h4>Media</h4>
+              </div>
+              <div class="card-body">
+                <% for(let i=0; i < 4; i += 2) { %>
+                  <div class="row">
+                    <div class="input-upload col-6">
+                      <div class="box">
+                        <input class="form-control form-image" type="file" id="file-input<%=i%>" data-id="<%=i%>"
+                          accept="image/*" />
+                      </div>
+                      <div class="box-2 img-result row align-items-center justify-content-center">
+                        <img style="display: none;" id="previewImg<%=i%>" class="cropped" src="" alt="">
+                      </div>
+                    </div>
+                    <div class="input-upload col-6">
+                      <div class="box">
+                        <input class="form-control form-image" type="file" id="file-input<%=i+1%>" data-id="<%=i+1%>"
+                          accept="image/*" />
+                      </div>
+                      <div class="box-2 img-result row align-items-center justify-content-center">
+                        <img style="display: none;" id="previewImg<%=i+1%>" class="cropped" src="" alt="">
+                      </div>
+                    </div>
+                  </div>
+                <% } %>
+              </div>
+              <div class="row align-items-center justify-content-center">
+                <button type="submit" class="btn btn-primary w-25 mb-3 justify-content-center rounded font-sm hover-up"> Publish</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% for(let i=0; i < 4; i++) { %>
+    <div class="modal fade" id="imageModal<%=i%>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Image Crop</h1>
+            <button type="button" class="btn-close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="imagecrop<%=i%> width-100"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" id="cropButton<%=i%>" class="btn btn-primary">Crop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const croppers = [];
+
+    // Initialize cropper for image upload
+    document.querySelectorAll('.form-image').forEach(item => {
+      item.addEventListener('change', function previewImage(event) {
+        let element = event.target;
+        let number = element.getAttribute('data-id');
+        let cropper;
+        let imageCrop = document.querySelector(`.imagecrop${number}`);
+        let imagePreview = document.getElementById(`previewImg${number}`);
+
+        if (element.files && element.files.length > 0) {
+          let reader = new FileReader();
+          reader.onload = function (e) {
+            $(document).ready(function () {
+              document.getElementById(`imageModal${number}`).classList.add('show');
+              $(`#imageModal${number}`).modal('show');
+              let img = document.createElement('img');
+              img.id = 'image';
+              img.src = e.target.result;
+              imageCrop.appendChild(img);
+
+              cropper = new Cropper(img, {
+                viewMode: 0,
+                dragMode: 'move',
+                responsive: true,
+                rotatable: true,
+                scalable: true,
+                cropBoxResizable: true,
+                initialAspectRatio: 1 / 1,
+                minContainerWidth: 450,
+                minContainerHeight: 500,
+                minCanvasHeight: 500,
+                minCanvasWidth: 500,
+              });
+            });
+
+            const cropButton = document.getElementById('cropButton' + number);
+            cropButton.addEventListener('click', function () {
+              let modal = document.getElementById('imageModal' + number);
+              let bootstrapModal = bootstrap.Modal.getInstance(modal);
+              bootstrapModal.hide();
+
+              let imgSrc = cropper.getCroppedCanvas().toDataURL('image/jpeg');
+              imagePreview.style.display = 'block';
+              imagePreview.src = imgSrc;
+              croppers.push(imgSrc);
+            });
+          };
+          reader.readAsDataURL(element.files[0]);
+        }
+      });
+    });
+
+    // Handle form submission
+    document.getElementById('productForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      let formData = new FormData(e.target);
+
+      croppers.forEach((image, index) => {
+        let blob = dataURLToBlob(image);
+        formData.append('croppedImages', blob, `croppedImage${index}.jpeg`);
+      });
+
+      fetch('/admin/products/add', {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Product Added',
+              text: 'Your product has been successfully added!',
+            }).then(() => {
+              window.location.href = '/admin/viewProducts'; // Redirect after alert
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: data.message || 'There was an error adding your product. Please try again.',
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Fetch Error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'There was an error adding your product. Please try again.',
+          });
+        });
+    });
+
+    function dataURLToBlob(dataURL) {
+      let binary = atob(dataURL.split(',')[1]);
+      const mimeString = dataURL.split(',')[0].split(":")[1].split(';')[0];
+      const ab = new ArrayBuffer(binary.length);
+      const ix = new Uint8Array(ab);
+
+      for (let i = 0; i < binary.length; i++) {
+        ix[i] = binary.charCodeAt(i);
+      }
+      return new Blob([ab], { type: mimeString });
+    }
+  });
+</script>
+
+
+
+
+
+
+  <%- include('../layoutAdmin/footer') %>

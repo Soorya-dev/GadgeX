@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Nest Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="" />
+    <meta property="og:type" content="" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <link rel="shortcut icon" type="image/x-icon" href="/adminCss/imgs/theme/favicon.svg" />
+    <link href="/adminCss/css/main.css?v=1.1" rel="stylesheet" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            margin-top: 50px;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        .card {
+            background-color: #fff;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .order-details {
+            border: 1px solid #e9ecef;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+
+        .order-details h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .product-item {
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        .product-item h4 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #007bff;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-delivered {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .status-processing {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .status-cancelled {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .badge.Accepted {
+            background-color: #8bc34a;
+            color: #ffff;
+        }
+
+        .badge.Denied {
+            background-color: rgb(230, 2, 2);
+            color: #ffff;
+        }
+        .status-pending {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .address {
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            background-color: #f8f9fa;
+        }
+
+        .address h2 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .address p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #666;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+
+        .badge.Pending {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .badge.Shipped {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+
+        .badge.Delivered {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .badge.Canceled {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .badge.RefundAccepted {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .badge.Confirmed {
+            background-color: #8bc34a;
+            color: #ffffff;
+        }
+
+        .badge {
+            background-color: #6c757d;
+            color: #fff;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        .text-center span {
+            color: #007bff;
+        }
+        .text-bold {
+        font-weight: bold;
+        color: black; /* Optional: Add color to differentiate the offer price */
+        }
+
+        .order-details .card-body, .product-details .card-body {
+        padding: 1rem;
+    }
+    .order-details .card-body h2 {
+        font-size: 1.5rem;
+    }
+    .address h4 {
+        font-size: 1.2rem;
+    }
+    .product-item img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+    .badge.pending {
+        background-color: #f0ad4e;
+    }
+    .badge.processing {
+        background-color: #5bc0de;
+    }
+    .badge.shipped {
+        background-color: #0275d8;
+    }
+    .badge.delivered {
+        background-color: #5cb85c;
+    }
+    .badge.canceled {
+        background-color: #dc3545;
+            color: #fff;
+    }
+    .badge.confirmed {
+        background-color: #5cb85c;
+    }
+
+    </style>
+
+
+<body>
+
+    <%-include('../layoutUser/header2.ejs')%>
+
+    <div class="container mt-5">
+        <div class="card p-4">
+            <div class="container mt-5">
+                <h1>Order Tracking</h1>
+                
+                <% orderData.forEach(order => { %>
+                  <div class="card mb-4">
+                    <div class="card-body">
+                      <h2 class="card-title">Order #<%= order._id %></h2>
+                      
+                      <div class="row">
+                        <div class="col-md-6">
+                          <h3>Order Details</h3>
+                          <p><strong>Date:</strong> <%= order.Date.toDateString() %></p>
+                          <p><strong>Status:</strong> <span class="badge <%= order.status.toLowerCase() %>"><%= order.status %></span></p>
+                          <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                          <p><strong>Subtotal:</strong> $<%= order.subtotal.toFixed(2) %></p>
+                          <% if (order.discount > 0) { %>
+                            <p><strong>Discount:</strong> $<%= order.discount.toFixed(2) %></p>
+                          <% } %>
+                        </div>
+                        
+                        <div class="col-md-6">
+                          <h3>Shipping Address</h3>
+                          <address>
+                            <%= order.addressId.fullName %><br>
+                            <%= order.addressId.addressLine1 %><br>
+                            <%= order.addressId.city %>, <%= order.addressId.state %> <%= order.addressId.zipCode %><br>
+                            <%= order.addressId.country %>
+                          </address>
+                        </div>
+                      </div>
+                      
+                      <h3>Products</h3>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% order.product.forEach(item => { %>
+                            <tr>
+                              <td><%= item.productId.name %></td>
+                              <td><%= item.quantity %></td>
+                              <td>$<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                            </tr>
+                          <% }); %>
+                        </tbody>
+                      </table>
+                      
+                      <a href="/userProfile" class="btn btn-primary">Back to Profile</a>
+                      <% if (showContinuePayment) { %>
+                        <button class="btn btn-primary" onclick="continuePayment('<%= orderData[0]._id %>')">Continue Payment</button>
+                      <% } %>
+               
+<% if (order.status.toLowerCase() === 'delivered' && order.returnStatus !== 'Approved') { %>
+    <a href="/downloadInvoice/<%= order._id %>" class="btn btn-success ml-2">Download Invoice</a>
+  <% } %>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+            </div>
+        </div>
+    </div>
+    <%-include('../layoutUser/footer.ejs')%>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.11.0/toastify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+    <script>
+        function continuePayment(orderId) {
+  fetch(`/continue-payment/${orderId}`, { method: 'POST' })
+    .then(response => response.json())
+    .then(data => {
+      if (data.approvalUrl) {
+        // Open PayPal in a new window
+        const paypalWindow = window.open(data.approvalUrl, '_blank');
+        
+        // Check periodically if the PayPal window is closed
+        const checkPaypalWindow = setInterval(() => {
+          if (paypalWindow.closed) {
+            clearInterval(checkPaypalWindow);
+            // Refresh the current page to update the order status
+            window.location.reload();
+          }
+        }, 1000);
+      } else {
+        alert('Error creating payment. Please try again.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    });
+}
+        </script>
+</body>
+
+</html>

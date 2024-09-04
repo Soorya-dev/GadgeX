@@ -1,0 +1,376 @@
+<%-include('../layoutUser/header.ejs')%>
+
+
+
+<style>
+    .btn-expandable {
+  position: relative;
+}
+.btn-expandable span {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  bottom: 0;
+  align-items: center;
+  display: inline-flex;
+  font-weight: 300;
+  font-size: 1.1rem;
+  white-space: nowrap;
+  letter-spacing: 0;
+  min-width: 100px;
+  padding-left: 1.8rem;
+  padding-right: 0.4rem;
+  color: #fff;
+  background-color: #c96;
+  transition: all 0.35s ease;
+  opacity: 0;
+  visibility: hidden;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  transform: translateX(15px);
+  z-index: -1;
+}
+.btn-expandable:hover,
+.btn-expandable:focus {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+}
+.btn-expandable:hover span,
+.btn-expandable:focus span {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(0);
+}
+</style>
+
+
+    <main class="main">
+        <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+            <div class="container d-flex align-items-center">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Products</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Default</li>
+                </ol>
+
+                <nav class="product-pager ml-auto" aria-label="Product">
+                    <a class="product-pager-link product-pager-prev" href="#" aria-label="Previous" tabindex="-1">
+                        <i class="icon-angle-left"></i>
+                        <span>Prev</span>
+                    </a>
+
+                    <a class="product-pager-link product-pager-next" href="#" aria-label="Next" tabindex="-1">
+                        <span>Next</span>
+                        <i class="icon-angle-right"></i>
+                    </a>
+                </nav><!-- End .pager-nav -->
+            </div><!-- End .container -->
+        </nav><!-- End .breadcrumb-nav -->
+
+        <div class="page-content">
+            <div class="container">
+
+
+                <div class="product-details-top">
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <div class="product-gallery product-gallery-vertical">
+                                <div class="row">
+
+
+                                    <figure class="product-main-image">
+                                        <img id="product-zoom" src="/<%= singleProduct.image[0] %>"
+                                            data-zoom-image="/<%= singleProduct.image[0] %>" alt="product image">
+
+                                        <a href="#" id="btn-product-gallery" class="btn-product-gallery">
+                                            <i class="icon-arrows"></i>
+                                        </a>
+                                    </figure><!-- End .product-main-image -->
+
+                                    <div id="product-zoom-gallery" class="product-image-gallery">
+
+
+                                        <% singleProduct.image.forEach(image=> { %>
+                                            <a class="product-gallery-item" href="#" data-image="/<%= image %>"
+                                                data-zoom-image="/<%= image %>">
+                                                <img src="/<%= image %>" alt="product side">
+                                            </a>
+                                            <% }); %>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                    </div><!-- End .product-image-gallery -->
+                                </div><!-- End .row -->
+
+                            </div><!-- End .product-gallery -->
+                        </div><!-- End .col-md-6 -->
+
+                        <div class="col-md-6">
+                            <div class="product-details">
+                                <h1 class="product-title">
+                                    <%= singleProduct.name %>
+                                </h1><!-- End .product-title -->product
+
+                                <!-- <div class="ratings-container">
+                                    <div class="ratings">
+                                        <div class="ratings-val" style="width: 80%;"></div>
+                                    </div>
+                                    <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews
+                                        )</a>
+                                </div> -->
+                                <div class="product-price">
+                                  
+                                    <% if (singleProduct.offerApplied) { %>
+                                        <span class="original-price" style="text-decoration: line-through;">$: <%= singleProduct.price %></span>
+                                        <span class="discounted-price">&nbsp;$: <%= singleProduct.offerDetails.priceAfterOfferApplied %></span>
+                                    <% } else { %>
+                                        $: <%= singleProduct.price %>
+                                    <% } %>
+                                    
+                                    
+                                </div><!-- End .product-price -->
+                                <div class="product-stock">
+                                    <br>
+                                    <p>Stocks left: <%= singleProduct.stock %></p>
+                                </div>
+                                <div class="product-content">
+                                    <p>
+                                        <%= singleProduct.description %>
+                                    </p>
+                                </div><!-- End .product-content -->
+
+                             
+
+                                <!-- <div class="details-filter-row details-row-size">
+                                    <label for="qty">Qty:</label>
+                                    <div class="product-details-quantity">
+                                        <input type="number" id="qty" class="form-control" value="1" min="1" max="10"
+                                            step="1" data-decimals="0" required>
+                                    </div>
+                                </div> -->
+                                <div class="product-details-action">
+                                    <a href="#" class="btn-product btn-cart" onclick="addToCart('<%=singleProduct.id%>','<%=singleProduct.stock%>')"><span id="add-to-cart-btn">add to cart</span></a>
+
+
+                                    
+                                <div class="details-action-wrapper">
+                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"
+                                       onclick="addToWishlist(event, '<%= singleProduct._id %>', '<%= singleProduct.category._id %>')">
+                                       <span>Add to wishlist</span>
+                                    </a>
+                                </div>
+
+                                    
+                                    
+                                </div><!-- End .product-details-action -->
+                                
+
+
+                                <div class="product-details-footer">
+                                    <div class="product-cat">
+                                        <span>Category:</span>
+                                        <a href="#">  <%= singleProduct.category.name %></a>,
+                                        
+                                    </div>
+                                    <!-- End .product-cat -->
+
+                                    <!-- <div class="social-icons social-icons-sm">
+                                        <span class="social-label">Share:</span>
+                                        <a href="#" class="social-icon" title="Facebook" target="_blank"><i
+                                                class="icon-facebook-f"></i></a>
+                                        <a href="#" class="social-icon" title="Twitter" target="_blank"><i
+                                                class="icon-twitter"></i></a>
+                                        <a href="#" class="social-icon" title="Instagram" target="_blank"><i
+                                                class="icon-instagram"></i></a>
+                                        <a href="#" class="social-icon" title="Pinterest" target="_blank"><i
+                                                class="icon-pinterest"></i></a>
+                                    </div> -->
+                                </div><!-- End .product-details-footer -->
+                            </div><!-- End .product-details -->
+                        </div><!-- End .col-md-6 -->
+                    </div><!-- End .row -->
+                </div><!-- End .product-details-top -->
+
+
+
+               <!-- End .owl-carousel -->
+            </div><!-- End .container -->
+        </div><!-- End .page-content -->
+    </main><!-- End .main -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/jquery.hoverIntent.min.js"></script>
+    <script src="assets/js/jquery.waypoints.min.js"></script>
+    <script src="assets/js/superfish.min.js"></script>
+    <script src="assets/js/owl.carousel.min.js"></script>
+    <script src="assets/js/bootstrap-input-spinner.js"></script>
+    <script src="assets/js/jquery.elevateZoom.min.js"></script>
+    <script src="assets/js/bootstrap-input-spinner.js"></script>
+    <script src="assets/js/jquery.magnific-popup.min.js"></script>
+    <!-- Main JS File -->
+    <script src="assets/js/main.js"></script>
+
+
+    
+    
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+function addToCart(productId, stock) {
+  console.log("product id and stocks", productId, stock);
+  if (stock < 1) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Out of Stock',
+      text: 'This product is currently out of stock.',
+    });
+  } else {
+    const quantity = 1;
+    fetch('/cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ productId, quantity })
+    })
+    .then(response => {
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Please login to add items to your cart');
+        }
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log(data.message);
+      Swal.fire({
+        icon: 'success',
+        title: 'Product Added to Cart',
+        text: 'Product has been added to your cart!',
+        showConfirmButton: false,
+        timer: 1500
+      });
+    })
+    .catch(error => {
+      console.error('There was a problem with the fetch operation:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: error.message || 'Something went wrong!',
+      });
+    });
+  }
+}
+</script>
+
+<%- include('../layoutUser/footer.ejs') %>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function addToWishlist(event, productId, categoryId) {
+    event.preventDefault(); // Prevent the default link behavior
+
+    fetch('/addWishlist', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId, categoryId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Product added to wishlist.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        } else if (data.error === 'Product already in wishlist') {
+            Swal.fire({
+                title: 'Info',
+                text: 'Product is already in your wishlist.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: data.error || 'Failed to add product to wishlist.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            title: 'Error',
+            text: 'An unexpected error occurred.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        console.error('Error:', error);
+    });
+}
+
+</script>
+<!-- <script>
+function addToCart(productId) {
+    const quantity = 1;
+    fetch('/cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ productId, quantity })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Product Added to Cart',
+            text: 'Product has been added to your cart!',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
+}
+</script> -->

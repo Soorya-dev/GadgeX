@@ -1,0 +1,175 @@
+<%- include('../layoutAdmin/header') %>
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Order detail</h2>
+            <p>Details for Order ID: <%= order._id %></p>
+        </div>
+    </div>
+    <div class="card">
+        <header class="card-header">
+            <div class="row align-items-center">
+                <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                    <span> <i class="material-icons md-calendar_today"></i> <b><%= new Date(order.Date).toLocaleString() %></b> </span> <br />
+                    <small class="text-muted">Order ID: <%= order._id %></small>
+                </div>
+                <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+                    <form action="/admin/orders/update-status" method="POST" class="d-inline-block mb-lg-0 mr-5 mw-200">
+                        <input type="hidden" name="orderId" value="<%= order._id %>">
+                        <select name="status" class="form-select d-inline-block mb-lg-0 mr-5 mw-200" onchange="this.form.submit()">
+                            <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                            <option value="Awaiting payment" <%= order.status === 'Awaiting payment' ? 'selected' : '' %>>Awaiting payment</option>
+                            <option value="Confirmed" <%= order.status === 'Confirmed' ? 'selected' : '' %>>Confirmed</option>
+                            <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                            <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                            <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                        </select>
+                    </form>
+                    <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a>
+                </div>
+            </div>
+        </header>
+        <!-- card-header end// -->
+        <div class="card-body">
+            <div class="row mb-50 mt-20 order-info-wrap">
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-person"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">Customer</h6>
+                            <p class="mb-1">
+                                <%= order.user.name %> <br />
+                                <%= order.user.email %> <br />
+                                <%= order.user.phone %> <!-- Assuming user model has a phone field -->
+                            </p>
+                            <a href="#">View profile</a>
+                        </div>
+                    </article>
+                </div>
+                <!-- col// -->
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-local_shipping"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">Order info</h6>
+                            <p class="mb-1">
+                                Shipping: <%= order.shippingMethod %> <br /> <!-- Assuming you have a shippingMethod field -->
+                                Pay method: <%= order.paymentMethod %> <br />
+                                Status: <%= order.status %>
+                            </p>
+                            <a href="#">Download info</a>
+                        </div>
+                    </article>
+                </div>
+                <!-- col// -->
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-place"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">Deliver to</h6>
+                            <p class="mb-1">
+                                City: <%= order.addressId.city %>, <%= order.addressId.country %> <br />
+                                <%= order.addressId.street %> <br />
+                                Po Box <%= order.addressId.zipcode %>
+                            </p>
+                            <a href="#">View profile</a>
+                        </div>
+                    </article>
+                </div>
+                <!-- col// -->
+            </div>
+            <!-- row // -->
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th width="40%">Product</th>
+                                    <th width="20%">Unit Price</th>
+                                    <th width="20%">Quantity</th>
+                                    <th width="20%" class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% order.product.forEach(item => { %>
+                                <tr>
+                                    <td>
+                                        <a class="itemside" href="#">
+                                            <div class="left">
+                                                <img src="<%= item.productId.imageUrl %>" width="40" height="40" class="img-xs" alt="Item" /> <!-- Assuming product model has an imageUrl field -->
+                                            </div>
+                                            <div class="info"><%= item.productId.name %></div>
+                                        </a>
+                                    </td>
+                                    <td>$<%= item.productId.price.toFixed(2) %></td>
+                                    <td><%= item.quantity %></td>
+                                    <td class="text-end">$<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                                </tr>
+                                <% }); %>
+                                <tr>
+                                    <td colspan="4">
+                                        <article class="float-end">
+                                            <dl class="dlist">
+                                                <dt>Subtotal:</dt>
+                                                <dd>$<%= order.subtotal.toFixed(2) %></dd>
+                                            </dl>
+                                            <dl class="dlist">
+                                                <dt>Shipping cost:</dt>
+                                                <dd>$<%= order.shippingCost ? order.shippingCost.toFixed(2) : '0.00' %></dd> <!-- Assuming you have a shippingCost field -->
+                                            </dl>
+                                            <dl class="dlist">
+                                                <dt>Grand total:</dt>
+                                                <dd><b class="h5">$<%= (order.subtotal + (order.shippingCost || 0)).toFixed(2) %></b></dd>
+                                            </dl>
+                                            <dl class="dlist">
+                                                <dt class="text-muted">Status:</dt>
+                                                <dd>
+                                                    <span class="badge rounded-pill alert-<%= order.status.toLowerCase() === 'pending' ? 'warning' : order.status.toLowerCase() === 'Delivered' ? 'success' : 'danger' %>">
+                                                        <%= order.status %>
+                                                    </span>
+                                                </dd>
+                                            </dl>
+                                        </article>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- table-responsive// -->
+                </div>
+                <!-- col// -->
+                <div class="col-lg-1"></div>
+                <div class="col-lg-4">
+                    <div class="box shadow-sm bg-light">
+                        <h6 class="mb-15">Payment info</h6>
+                        <p>
+                            <img src="assets/imgs/card-brands/2.png" class="border" height="20" /> <%= order.paymentMethod %> <br />
+                            Business name: Grand Market LLC <br />
+                            Phone: +1 (800) 555-154-52 <!-- Assuming these are placeholder values -->
+                        </p>
+                    </div>
+                    <div class="h-25 pt-4">
+                        <div class="mb-3">
+                            <label>Notes</label>
+                            <textarea class="form-control" name="notes" id="notes" placeholder="Type some note"></textarea>
+                        </div>
+                        <button class="btn btn-primary">Save note</button>
+                    </div>
+                </div>
+                <!-- col// -->
+            </div>
+        </div>
+        <!-- card-body end// -->
+    </div>
+    <!-- card end// -->
+</section>
+
+<%- include('../layoutAdmin/footer') %>

@@ -1,0 +1,188 @@
+<%- include('../layoutAdmin/header') %>
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Order List</h2>
+                <p>Lorem ipsum dolor sit amet.</p>
+            </div>
+            <div>
+                <input type="text" placeholder="Search order ID" class="form-control bg-white" />
+            </div>
+        </div>
+        <div class="card mb-4">
+            <header class="card-header">
+                <div class="row gx-3">
+                    <div class="col-lg-4 col-md-6 me-auto">
+                        <input type="text" placeholder="Search..." class="form-control" />
+                    </div>
+                    <div class="col-lg-2 col-6 col-md-3">
+                        <select class="form-select">
+                            <option>Status</option>
+                            <option>Active</option>
+                            <option>Disabled</option>
+                            <option>Show all</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-6 col-md-3">
+                        <select class="form-select">
+                            <option>Show 20</option>
+                            <option>Show 30</option>
+                            <option>Show 40</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+            <!-- card-header end// -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Date</th>
+                                <th scope="col" class="text-end">Action</th>
+                                <th scope="col">Return Status</th>
+                                <th scope="col">Return Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% orders.forEach(order=> { %>
+                                <tr>
+                                    <td>
+                                        <%= order._id %>
+                                    </td>
+                                    <td><b>
+                                            <%= order.user.name %>
+                                        </b></td>
+                                    <td>
+                                        <%= order.user.email %>
+                                    </td>
+                                    <td>$<%= order.subtotal.toFixed(2) %>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="badge rounded-pill alert-<%= order.status.toLowerCase() === 'pending' ? 'warning' : order.status.toLowerCase() === 'Delivered' ? 'success' : 'danger' %>">
+                                            <%= order.status %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <%= new Date(order.Date).toLocaleDateString() %>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="/admin/orderDetails?id=<%= order._id %>"
+                                            class="btn btn-md rounded font-sm">Detail</a>
+                                        <div class="dropdown">
+                                            <a href="#" data-bs-toggle="dropdown"
+                                                class="btn btn-light rounded btn-sm font-sm">
+                                                <i class="material-icons md-more_horiz"></i>
+                                            </a>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item"
+                                                    href="/admin/orderDetails?id=<%= order._id %>">View detail</a>
+                                                <form action="/admin/orders/update-status" method="POST"
+                                                    style="display:inline;">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <select name="status" onchange="this.form.submit()">
+                                                        <option value="Pending" <%=order.status==='Pending' ? 'selected'
+                                                            : '' %>>Pending</option>
+                                                        <option value="Delivered" <%=order.status==='Delivered'
+                                                            ? 'selected' : '' %>>Delivered</option>
+                                                        <option value="Cancelled" <%=order.status==='Cancelled'
+                                                            ? 'selected' : '' %>>Cancelled</option>
+                                                    </select>
+                                                </form>
+                                                <form action="/admin/orders/cancel" method="POST"
+                                                    style="display:inline;">
+                                                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                    <button type="submit" class="dropdown-item text-danger">Cancel
+                                                        Order</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <!-- dropdown //end -->
+                                    </td>
+                                    <td>
+                                        <%= order.returnStatus %>
+                                      </td>
+                                      <td>
+                                        <% if (order.returnStatus === 'Pending') { %>
+                                          <form action="/admin/orders/process-return-request" method="POST" style="display:inline;">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <select name="action" onchange="this.form.submit()">
+                                              <option value="">Select Action</option>
+                                              <option value="Approved">Approve</option>
+                                              <option value="Rejected">Reject</option>
+                                            </select>
+                                          </form>
+                                        <% } else { %>
+                                          N/A
+                                        <% } %>
+                                      </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- table-responsive //end -->
+            </div>
+            <!-- card-body end// -->
+        </div>
+        <!-- card end// -->
+        <div class="pagination-area mt-15 mb-50">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-start">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/admin/orders?page=<%= currentPage - 1 %>">Previous</a>
+                        </li>
+                    <% } %>
+                    
+                    <% for(let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="/admin/orders?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                    
+                    <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/admin/orders?page=<%= currentPage + 1 %>">Next</a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+    </section>
+    <%- include('../layoutAdmin/footer') %>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const successMessage = '<%= success %>';
+    const errorMessage = '<%= error %>';
+
+    if (successMessage) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: successMessage,
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+    }
+
+    if (errorMessage) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: errorMessage,
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+    }
+  });
+</script>

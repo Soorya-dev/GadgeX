@@ -1,0 +1,291 @@
+<%- include('../layoutUser/header2.ejs') %>
+
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('userCss/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title">Shop<span></span></h1>
+        </div>
+    </div>
+    <!-- End .page-header -->
+    
+    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+                
+            </ol>
+        </div>
+    </nav>
+    <!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="toolbox">
+                        <div class="toolbox-left">
+                            <div class="toolbox-info">
+                                Showing <span id="product-count"></span> Products
+                            </div>
+                        </div>
+                        <div class="toolbox-right">
+                            <div class="toolbox-sort">
+                                <label for="sortby">Sort by:</label>
+                                <div class="select-custom">
+                                    <select name="sortby" id="sortby" class="form-control">
+                                        <option value="popularity">Most Popular</option>
+                                        <option value="date">Date</option>
+                                        <option value="A-Z">aA - zZ</option>
+                                        <option value="Z-A">zZ - aA</option>
+                                        <option value="HighToLow">Price (High to Low)</option>
+                                        <option value="LowToHigh">Price (Low to High)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End .toolbox -->
+
+                    <div class="products mb-3">
+                        <div class="row justify-content-center" id="product-container">
+                            <% products.forEach(product => { %>
+                                <div class="col-6 col-md-4 col-lg-4">
+                                    <div class="product product-7 text-center">
+                                        <figure class="product-media">
+                                            <span class="product-label label-new">New</span>
+                                            <a href="/singleProduct/<%= product._id %>">
+                                                <img src="/<%= product.image[0] %>" alt="Product image" class="product-image" />
+                                            </a>
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-wishlist btn-expandable"
+                                                   onclick="addToWishlist(event, '<%= product._id %>', '<%= product.category._id %>')">
+                                                   <span>Add to wishlist</span>
+                                                </a>
+                                            </div>
+                                        </figure>
+                                        <div class="product-body">
+                                            <div class="product-cat">
+                                                <a href="#"><%= product.category.name %></a>
+                                            </div>
+                                            <h3 class="product-title">
+                                                <a href="/singleProduct/<%= product._id %>"><%= product.name %></a>
+                                            </h3>
+                                            <div class="product-price">
+                                                <% if (product.offerApplied) { %>
+                                                    <span class="original-price" style="text-decoration: line-through;">$: <%= product.price %></span>
+                                                    <span class="discounted-price">$: <%= product.offerDetails.priceAfterOfferApplied %></span>
+                                                <% } else { %>
+                                                    $: <%= product.price %>
+                                                <% } %>
+                                            </div>
+                                            
+                                            <div class="product-stock">
+                                                <p>Stocks left: <%= product.stock %></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                    <!-- End .products -->
+
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center" id="pagination">
+                            <!-- Pagination will be dynamically populated -->
+                        </ul>
+                    </nav>
+                </div>
+                <!-- End .col-lg-9 -->
+
+                <aside class="col-lg-3 order-lg-first">
+                    <div class="sidebar sidebar-shop">
+                        <div class="widget widget-clean">
+                            <label>Filters:</label>
+                            <a href="/shop" class="sidebar-filter-clear" onclick="location.href='/shop';">Clean All</a>
+                        </div>
+                        
+                        
+                        <div class="widget widget-collapsible">
+                            <h3 class="widget-title">
+                                <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
+                                    Category
+                                </a>
+                            </h3>
+                            <select id="categoryId">
+                                <option value="allProducts">All Categories</option>
+                                <% categories.forEach(cat => { %>
+                                    <option value="<%= cat._id %>"><%= cat.name %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </div>
+                </aside>
+                <!-- End .col-lg-3 -->
+            </div>
+            <!-- End .row -->
+        </div>
+        <!-- End .container -->
+    </div>
+    <!-- End .page-content -->
+</main>
+<!-- End .main -->
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+     let currentPage = 1;
+    let currentSort = 'popularity';
+    let currentCategory = 'allProducts';
+    let currentSearch = '';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('q')) {
+        currentSearch = urlParams.get('q');
+    }
+
+    function fetchProducts() {
+        const query = new URLSearchParams({
+            search: currentSearch,
+            sortBy: currentSort,
+            categoryId: currentCategory,
+            page: currentPage,
+            limit: 6 // Show only 6 products per page
+        }).toString();
+
+        axios.get(`/filter-products?${query}`)
+            .then(response => {
+                const { products, totalProducts, currentPage, totalPages } = response.data;
+                updateProductList(products);
+                updatePagination(currentPage, totalPages);
+                document.getElementById('product-count').textContent = `${products.length} of ${totalProducts}`;
+            })
+            .catch(error => {
+                console.error('Error fetching products:', error);
+            });
+    }
+
+    function updateProductList(products) {
+    const productContainer = document.getElementById('product-container');
+    productContainer.innerHTML = products.map(product => `
+        <div class="col-6 col-md-4 col-lg-4">
+            <div class="product product-7 text-center">
+                <figure class="product-media">
+                    <span class="product-label label-new">New</span>
+                    <a href="/singleProduct/${product._id}">
+                        <img src="/${product.image[0]}" alt="Product image" class="product-image" />
+                    </a>
+                    <div class="product-action-vertical">
+                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"
+                           onclick="addToWishlist(event, '${product._id}', '${product.category._id}')">
+                           <span>Add to wishlist</span>
+                        </a>
+                    </div>
+                </figure>
+                <div class="product-body">
+                    <div class="product-cat">
+                        <a href="#">${product.category.name}</a>
+                    </div>
+                    <h3 class="product-title">
+                        <a href="/singleProduct/${product._id}">${product.name}</a>
+                    </h3>
+                    <div class="product-price">
+                        ${product.offerApplied ? `
+                            <span class="original-price" style="text-decoration: line-through;">$: ${product.price}</span>
+                            <span class="discounted-price">$: ${product.offerDetails.priceAfterOfferApplied}</span>
+                        ` : `$: ${product.price}`}
+                    </div>
+                    <div class="product-stock">
+                        <p>Stocks left: ${product.stock}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+
+    function updatePagination(currentPage, totalPages) {
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+
+        if (currentPage > 1) {
+            pagination.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Previous</a></li>`;
+        }
+
+        for (let i = 1; i <= totalPages; i++) {
+            pagination.innerHTML += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                </li>
+            `;
+        }
+
+        if (currentPage < totalPages) {
+            pagination.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Next</a></li>`;
+        }
+    }
+
+    function changePage(page) {
+        currentPage = page;
+        fetchProducts();
+    }
+
+    document.getElementById('sortby').addEventListener('change', function() {
+        currentSort = this.value;
+        currentPage = 1;
+        fetchProducts();
+    });
+
+    document.getElementById('categoryId').addEventListener('change', function() {
+        currentCategory = this.value;
+        currentPage = 1;
+        fetchProducts();
+    });
+
+    // Call fetchProducts initially to load the first page
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchProducts();
+    });
+
+    function addToWishlist(event, productId, categoryId) {
+        event.preventDefault();
+
+        fetch('/addWishlist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+             
+        
+            },
+            body: JSON.stringify({ productId, categoryId })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to Wishlist',
+                    text: 'The product has been added to your wishlist.',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } else if (result.error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to Add',
+                    text: result.error,
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error adding to wishlist:', error);
+        });
+    }
+
+    fetchProducts(); // Initial fetch
+
+</script>
+
+<%- include('../layoutUser/footer.ejs') %>

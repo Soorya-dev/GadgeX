@@ -1,0 +1,252 @@
+<%- include('../layoutUser/header.ejs') %>
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('userCss/images/backgrounds/bg-4.jpg')">
+        <div class="container">
+            <h1 class="page-title">Shopping Cart<span>Shop</span></h1>
+        </div>
+    </div>
+    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/cart">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+            </ol>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <div class="cart">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div id="cartContainer">
+                            <table class="table table-cart table-mobile">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Delete</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (products.length === 0) { %>
+                                        <tr>
+                                            <td colspan="5" class="text-center">Your cart is empty</td>
+                                        </tr>
+                                    <% } else { %>
+                                        <% products.forEach(product => { %>
+                                            <tr>
+                                                <td class="product-col">
+                                                    <div class="product">
+                                                        <figure class="product-media">
+                                                            <a href="#">
+                                                                <img src="/<%= product.productId?.image[0] %>" alt="Product image">
+                                                            </a>
+                                                        </figure>
+                                                        <h3 class="product-title">
+                                                            <a href="#"><%= product.productId?.name %></a>
+                                                        </h3>
+                                                    </div>
+                                                </td>
+                                                <td class="price-col">$<%= product.productId.offerApplied ? product.productId.offerDetails.priceAfterOfferApplied : product.productId.price %></td>
+                                                <td class="quantity-col">
+                                                    <div class="number-input">
+                                                        <button class="btn-decrement" onclick="decrementQuantity('<%= product._id %>', '<%= product.productId?.stock %>')"></button>
+                                                        <input type="number" class="form-control quantity-input" id="quantity-<%= product._id %>" value="<%= product.quantity %>" min="1" max="<%= product.productId?.stock %>" step="1" readonly>
+                                                        <button class="btn-increment plus" onclick="incrementQuantity('<%= product._id %>', '<%= product.productId?.stock %>')"></button>
+                                                    </div>
+                                                </td>
+                                                <td class="total-col">$<%= (product.quantity * (product.productId.offerApplied ? product.productId.offerDetails.priceAfterOfferApplied : product.productId.price)).toFixed(2) %></td>
+                                                <td class="remove-col">
+                                                    <button class="btn-remove" data-id="<%= product._id %>" onclick="removeFromCart(this)">
+                                                        <i class="icon-close"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <aside class="col-lg-3">
+                        <div class="summary summary-cart" id="CartTotal">
+                            <h3 class="summary-title">Cart Total</h3>
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td>Subtotal:</td>
+                                        <td id="subtotal">$<%= subtotal.toFixed(2) %></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <a href="/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+                        </div>
+                        <a href="category.html" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<style>
+input[type="number"] {
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.number-input {
+  border: 2px solid #ddd;
+  display: inline-flex;
+}
+
+.number-input,
+.number-input * {
+  box-sizing: border-box;
+}
+
+.number-input button {
+  outline: none;
+  -webkit-appearance: none;
+  background-color: transparent;
+  border: none;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  cursor: pointer;
+  margin: 0;
+  position: relative;
+}
+
+.number-input button:before,
+.number-input button:after {
+  display: inline-block;
+  position: absolute;
+  content: '';
+  width: 1rem;
+  height: 2px;
+  background-color: #212121;
+  transform: translate(-50%, -50%);
+}
+
+.number-input button.plus:after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.number-input input[type=number] {
+  font-family: sans-serif;
+  max-width: 5rem;
+  padding: .5rem;
+  border: solid #ddd;
+  border-width: 0 2px;
+  font-size: 2rem;
+  height: 3rem;
+  font-weight: bold;
+  text-align: center;
+}
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  function updateQuantity(productId, newQuantity) {
+      if (newQuantity >= 10) {
+          Swal.fire({
+              title: 'Maximum Quantity Reached',
+              text: 'You have reached the maximum quantity limit for this product.',
+              icon: 'info',
+              confirmButtonText: 'OK'
+          });
+          newQuantity = 10;  // Ensure the quantity does not exceed 10
+      }
+      
+      if (newQuantity < 1) {
+          newQuantity = 1;  // Ensure the quantity does not go below 1
+      }
+
+      fetch('/updateQuantity', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ productId: productId, quantity: newQuantity })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              console.log('Quantity updated successfully');
+              document.getElementById(`quantity-${productId}`).value = newQuantity; // Update the input field with the new quantity
+              $('#cartContainer').load('/cart #cartContainer', function() {
+                  $('#subtotal').text('$' + data.subtotal.toFixed(2));
+              });
+
+              $('#CartTotal').load('/cart #CartTotal', function() {
+                  $('#subtotal').text('$' + data.subtotal.toFixed(2));
+              });
+          } else {
+              console.error('Error updating quantity');
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+  }
+
+  function incrementQuantity(productId, stock) {
+      const inputField = document.getElementById(`quantity-${productId}`);
+      let currentQuantity = parseInt(inputField.value);
+      if (currentQuantity < stock) {
+          currentQuantity += 1;
+          inputField.value = currentQuantity;
+          updateQuantity(productId, currentQuantity);
+      } else {
+          Swal.fire({
+              title: 'Out of Stock',
+              text: 'You cannot add more than the available stock.',
+              icon: 'error',
+              confirmButtonText: 'OK'
+          });
+      }
+  }
+
+  function decrementQuantity(productId) {
+      const inputField = document.getElementById(`quantity-${productId}`);
+      let currentQuantity = parseInt(inputField.value);
+      if (currentQuantity > 1) {
+          currentQuantity -= 1;
+          inputField.value = currentQuantity;
+          updateQuantity(productId, currentQuantity);
+      }
+  }
+
+  function removeFromCart(button) {
+      const productId = button.getAttribute('data-id');
+      fetch('/removeCart', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ productId })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              window.location.reload();
+          } else {
+              console.error('Failed to remove item from cart:', data.message);
+          }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+</script>

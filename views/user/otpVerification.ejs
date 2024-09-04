@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .otp-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .otp-input {
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #resend-btn {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+            display: none;
+            /* Hide initially */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="otp-form">
+        
+       
+        <h2>Enter OTP</h2> <br>
+        <h4>Otp send to your Email</h4>
+        <form action="/verify-otp" method="POST">
+            <input name="userId" type="hidden" value="<%= userId %>" id="userId">
+            <% for(var i=1; i<=4; i++) { %>
+                <input class="otp-input" type="text" maxlength="1" name="otp<%= i %>" required>
+                <% } %>
+                    <button class="submit-btn" type="submit">Verify OTP</button>
+                   
+        </form>
+        <p id="timer">Resend OTP in <span id="countdown">60</span> seconds</p>
+        <button id="resend-btn" onclick="resendOTP()">Resend OTP</button>
+    </div>
+
+    <script>
+        var timer;
+        var countdown = 60; // Resend timeout in seconds
+
+        // Function to start the timer
+        function startTimer() {
+            countdown = 60;
+            document.getElementById('timer').style.display = 'block';
+            document.getElementById('resend-btn').style.display = 'none';
+            updateTimer();
+            timer = setInterval(updateTimer, 1000);
+        }
+
+        // Function to update the timer
+        function updateTimer() {
+            countdown--;
+            document.getElementById('countdown').textContent = countdown;
+            if (countdown <= 0) {
+                clearInterval(timer);
+                document.getElementById('timer').style.display = 'none';
+                document.getElementById('resend-btn').style.display = 'block';
+            }
+        }
+
+        // Function to resend OTP
+        function resendOTP() {
+            const userId = document.getElementById('userId').value
+         
+            fetch("/reSendOtp", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: userId })
+            }).then(responce => responce.json())
+                .then(data => {
+                    if (data.success) {
+                        startTimer();
+
+                    } else {
+                        alert("not worked")
+                    }
+
+                })
+        }
+
+        // Start the timer when the page loads
+        startTimer();
+    </script>
+</body>
+
+</html>

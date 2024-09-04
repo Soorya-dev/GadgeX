@@ -1,0 +1,173 @@
+<%-include('../layoutAdmin/header.ejs')%>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Sales Report</h2>
+            <p>Detailed sales data for delivered orders</p>
+        </div>
+        <div>
+            <a href="/admin/downloadSalesReportPDF" class="btn btn-primary" id="downloadPDF"><i class="text-muted material-icons md-print"></i>Download PDF</a>
+            <a href="/admin/downloadSalesReportExcel" class="btn btn-success" id="downloadExcel"><i class="text-muted material-icons md-file-download"></i>Download Excel</a>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <h4 class="card-title">Sales Data</h4>
+            <div class="row">
+                <div class="col-md-3">
+                    <select id="filterSelect" class="form-select">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                        <option value="custom">Custom Date Range</option>
+                    </select>
+                </div>
+                <div class="col-md-3" id="customDateRange" style="display: none;">
+                    <input type="date" id="startDate" class="form-control">
+                </div>
+                <div class="col-md-3" id="customDateRange2" style="display: none;">
+                    <input type="date" id="endDate" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <button id="applyFilter" class="btn btn-primary">Apply Filter</button>
+                </div>
+            </div>
+        </header>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <h5>Overall Sales Count: <span id="overallSalesCount"><%= overallSalesCount %></span></h5>
+                </div>
+                <div class="col-md-4">
+                    <h5>Overall Order Amount: $<span id="overallOrderAmount"><%= overallOrderAmount.toFixed(2) %></span></h5>
+                </div>
+                <div class="col-md-4">
+                    <h5>Filtered Sales Count: <span id="filteredSalesCount">-</span></h5>
+                </div>
+            </div>
+            <table class="table align-middle table-nowrap mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Order ID</th>
+                        <th scope="col">User</th>
+                        <th scope="col">Address</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Subtotal</th>
+                        <th scope="col">Discount</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Products</th>
+                    </tr>
+                </thead>
+                <tbody id="salesTableBody">
+                    <% orders.forEach(order => { %>
+                    <tr>
+                        <td><%= order._id %></td>
+                        <td><%= order.user ? order.user.name : 'N/A' %></td>
+                        <td><%= order.addressId ? order.addressId.address : 'N/A' %></td>
+                        <td><%= order.Date ? order.Date.toLocaleDateString() : 'N/A' %></td>
+                        <td>$<%= order.subtotal ? order.subtotal.toFixed(2) : '0.00' %></td>
+                        <td>$<%= order.discount ? order.discount.toFixed(2) : '0.00' %></td>
+                        <td>$<%= (order.subtotal && order.discount) ? (order.subtotal - order.discount).toFixed(2) : '0.00' %></td>
+                        <td>
+                            <ul>
+                                <% if (order.product && Array.isArray(order.product)) { %>
+                                    <% order.product.forEach(prod => { %>
+                                        <li>
+                                            <%= prod.productId ? prod.productId.name : 'N/A' %> - 
+                                            Quantity: <%= prod.quantity || 'N/A' %>, 
+                                            Price: $<%= prod.price ? prod.price.toFixed(2) : 'N/A' %>, 
+                                            Total: $<%= prod.total ? prod.total.toFixed(2) : 'N/A' %>
+                                        </li>
+                                    <% }) %>
+                                <% } else { %>
+                                    <li>No product information available</li>
+                                <% } %>
+                            </ul>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script src="/adminCss/js/vendors/jquery-3.6.0.min.js"></script>
+<script src="/adminCss/js/vendors/bootstrap.bundle.min.js"></script>
+<script src="/adminCss/js/vendors/jquery.fullscreen.min.js"></script>
+<script src="/adminCss/js/main.js?v=1.1" type="text/javascript"></script>
+<script>
+   $(document).ready(function() {
+    console.log('Document ready');
+
+    $('#filterSelect').change(function() {
+        console.log('Filter select changed:', $(this).val());
+        if ($(this).val() === 'custom') {
+            $('#customDateRange, #customDateRange2').show();
+            console.log('Custom date range shown');
+        } else {
+            $('#customDateRange, #customDateRange2').hide();
+            console.log('Custom date range hidden');
+        }
+    });
+
+    $('#applyFilter').click(function() {
+        console.log('Apply Filter clicked');
+        const filter = $('#filterSelect').val();
+        console.log('Selected filter:', filter);
+
+        let url = '/admin/getSalesData?filter=' + filter;
+        console.log('Initial URL:', url);
+
+        if (filter === 'custom') {
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+            url += '&startDate=' + startDate + '&endDate=' + endDate;
+            console.log('Custom date range added to URL:', url);
+        }
+
+        $.get(url, function(data) {
+            console.log('Data received from backend:', data);
+            updateSalesTable(data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('AJAX request failed:', textStatus, errorThrown);
+        });
+    });
+
+    function updateSalesTable(data) {
+        console.log('Updating sales table with data:', data);
+
+        $('#salesTableBody').empty();
+        $('#filteredSalesCount').text(data.salesCount);
+        $('#overallOrderAmount').text(data.totalAmount.toFixed(2));
+
+        data.orders.forEach(order => {
+            console.log('Processing order:', order._id);
+            const row = `
+                <tr>
+                    <td>${order._id}</td>
+                    <td>${order.user ? order.user.name : 'N/A'}</td>
+                    <td>${order.addressId ? order.addressId.address : 'N/A'}</td>
+                    <td>${new Date(order.Date).toLocaleDateString()}</td>
+                    <td>$${order.subtotal.toFixed(2)}</td>
+                    <td>$${order.discount.toFixed(2)}</td>
+                    <td>$${(order.subtotal - order.discount).toFixed(2)}</td>
+                    <td>
+                        <ul>
+                            ${order.product.map(prod => `
+                                <li>
+                                    ${prod.productId ? prod.productId.name : 'N/A'} - 
+                                    Quantity: ${prod.quantity || 'N/A'}, 
+                                    Price: $${prod.price ? prod.price.toFixed(2) : 'N/A'}, 
+                                    Total: $${prod.total ? prod.total.toFixed(2) : 'N/A'}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </td>
+                </tr>
+            `;
+            $('#salesTableBody').append(row);
+        });
+    }
+});
+    </script>

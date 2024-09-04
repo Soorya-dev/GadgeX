@@ -1,0 +1,1432 @@
+<%- include('../layoutUser/header2.ejs') %>
+<style>
+  /* Style for orders section */
+  .order {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .order h2 {
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .order p {
+    margin-bottom: 5px;
+  }
+
+  .order ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  .order ul li {
+    margin-bottom: 5px;
+  }
+
+  /* Style for add address button */
+  .btn-add-address {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
+  .btn-add-address:hover {
+    background-color: #0056b3;
+  }
+
+  /* Style for modal form */
+  .modal-content {
+    border-radius: 10px;
+  }
+
+  .modal-title {
+    color: #333;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  .modal-body {
+    padding: 10px;
+  }
+
+  .modal-body .form-group label {
+    font-weight: bold;
+  }
+
+  .modal-body .form-control {
+    border-radius: 5px;
+  }
+
+  /* Style for save changes button */
+  .btn-save-changes {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+  }
+
+  .btn-save-changes:hover {
+    background-color: #218838;
+  }
+</style>
+<style>
+  .wallet-container {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .wallet-title {
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .balance-info {
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  .balance-label {
+    font-size: 18px;
+    color: #666;
+  }
+
+  .balance-amount {
+    font-size: 24px;
+    font-weight: bold;
+    color: #28a745;
+    margin-left: 10px;
+  }
+
+  .transaction-title {
+    color: #333;
+    margin-bottom: 15px;
+  }
+
+  .transactions {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .transaction-item {
+    background-color: #fff;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  .transaction-item.credit {
+    border-left: 4px solid #28a745;
+  }
+
+  .transaction-item.debit {
+    border-left: 4px solid #dc3545;
+  }
+
+  .transaction-type {
+    font-weight: bold;
+    flex-basis: 20%;
+  }
+
+  .transaction-amount {
+    font-weight: bold;
+    flex-basis: 20%;
+  }
+
+  .credit .transaction-amount {
+    color: #28a745;
+  }
+
+  .debit .transaction-amount {
+    color: #dc3545;
+  }
+
+  .transaction-date {
+    color: #666;
+    font-size: 0.9em;
+    flex-basis: 30%;
+  }
+
+  .transaction-description {
+    color: #666;
+    font-size: 0.9em;
+    flex-basis: 100%;
+    margin-top: 5px;
+  }
+
+  .no-transactions, .no-wallet {
+    color: #666;
+    font-style: italic;
+  }
+
+  @media (max-width: 768px) {
+    .transaction-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .transaction-type, .transaction-amount, .transaction-date {
+      flex-basis: 100%;
+      margin-bottom: 5px;
+    }
+  }
+</style>
+<main class="main">
+  <div
+    class="page-header text-center"
+    style="background-image: url('assets/images/page-header-bg.jpg');"
+  >
+    <div class="container">
+      <h1 class="page-title">My Account<span>Shop</span></h1>
+    </div>
+  </div>
+  <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+    <div class="container">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+        <li class="breadcrumb-item active" aria-current="page">My Account</li>
+      </ol>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="dashboard">
+      <div class="container">
+        <div class="row">
+          <aside class="col-md-4 col-lg-3">
+            <ul
+              class="nav nav-dashboard flex-column mb-3 mb-md-0"
+              role="tablist"
+            >
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  id="tab-dashboard-link"
+                  data-toggle="tab"
+                  href="#tab-dashboard"
+                  role="tab"
+                  aria-controls="tab-dashboard"
+                  aria-selected="true"
+                  >Dashboard</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  id="tab-orders-link"
+                  data-toggle="tab"
+                  href="#tab-orders"
+                  role="tab"
+                  aria-controls="tab-orders"
+                  aria-selected="false"
+                  >Orders</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  id="tab-wallet-link"
+                  data-toggle="tab"
+                  href="#tab-wallet"
+                  role="tab"
+                  aria-controls="tab-wallet"
+                  aria-selected="false"
+                  >Wallet</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  id="tab-address-link"
+                  data-toggle="tab"
+                  href="#tab-address"
+                  role="tab"
+                  aria-controls="tab-address"
+                  aria-selected="false"
+                  >Addresses</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  id="tab-account-link"
+                  data-toggle="tab"
+                  href="#tab-account"
+                  role="tab"
+                  aria-controls="tab-account"
+                  aria-selected="false"
+                  >Change Password</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/signOut" id="signOutLink"
+                  >Sign Out</a
+                >
+              </li>
+            </ul>
+          </aside>
+
+          <div class="col-md-8 col-lg-9">
+            <div class="tab-content">
+              <div
+                class="tab-pane fade show active"
+                id="tab-dashboard"
+                role="tabpanel"
+                aria-labelledby="tab-dashboard-link"
+              >
+                <p>
+                  Hello
+                  <span class="font-weight-normal text-dark"
+                    ><%= user.name %></span
+                  >
+                  (not
+                  <span class="font-weight-normal text-dark"
+                    ><%= user.name %></span
+                  >? <a href="#">Log out</a>)<br />
+                  From your account dashboard you can view your
+                  <a href="#tab-orders" class="tab-trigger-link link-underline"
+                    >recent orders</a
+                  >, manage your
+                  <a href="#tab-address" class="tab-trigger-link"
+                    >shipping and billing addresses</a
+                  >, and
+                  <a href="#tab-account" class="tab-trigger-link"
+                    >edit your password and account details</a
+                  >.
+                </p>
+              </div>
+
+              <div
+                class="tab-pane fade"
+                id="tab-orders"
+                role="tabpanel"
+                aria-labelledby="tab-orders-link"
+              >
+                <div class="col-md-8">
+                  <h2>Your Orders</h2>
+                  <% if (orders && orders.length > 0) { %> <%
+                  orders.forEach(order => { %>
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <h5 class="card-title">Order ID: <%= order._id %></h5>
+                      <a
+                        href="/orderTracking?orderId=<%= order._id %>"
+                        class="btn btn-link"
+                        >View More Details</a
+                      >
+
+                      <p class="card-text">
+                        <strong>Date:</strong> <%= order.Date.toLocaleString()
+                        %>
+                      </p>
+                      <p class="card-text">
+                        <strong>Total Amount:</strong> $<%=
+                        order.subtotal.toFixed(2) %>
+                      </p>
+                      <p class="card-text">
+                        <strong>Payment Method:</strong> <%= order.paymentMethod
+                        %>
+                      </p>
+                      <p class="card-text">
+                        <strong>Status:</strong> <%= order.status %>
+                      </p>
+
+                      <h6>Products:</h6>
+                      <ul>
+                        <% order.product.forEach(product => { %>
+                        <li>
+                          <%= product.productId.name %> - Quantity: <%=
+                          product.quantity %>
+                        </li>
+                        <% }); %>
+                      </ul>
+                      <td>
+                        <% if (order.returnStatus === 'Not Requested' &&
+                        order.status !== 'Cancelled' && order.status !==
+                        'Canceled' && order.status !== 'Returned') { %>
+                        <button
+                          class="btn btn-warning return-order"
+                          onclick="returnOrder('<%= order._id %>')"
+                        >
+                          Request Return
+                        </button>
+                        <% } else { %> Return Status: <%= order.returnStatus %>
+                        <% } %>
+                      </td>
+
+                      <% if (order.status !== 'Cancelled' && order.status !==
+                      'Canceled' && order.status !== 'Returned') { %>
+                      <button
+                        class="btn btn-danger cancel-order"
+                        data-order-id="<%= order._id %>"
+                      >
+                        Cancel Order
+                      </button>
+
+                      <% } %>
+                    </div>
+                  </div>
+                  <% }); %> <% } else { %>
+                  <p>No orders have been made yet.</p>
+                  <a href="/shop" class="btn btn-primary">Go Shop</a>
+                  <% } %>
+                </div>
+              </div>
+
+
+
+
+              <div class="tab-pane fade" id="tab-wallet" role="tabpanel" aria-labelledby="tab-wallet-link">
+                <div class="wallet-container">
+                  <div class="wallet-balance text-center">
+                    <% if (walletData) { %>
+                      <h3 class="wallet-title">My Wallet</h3>
+                      <div class="balance-info">
+                        <span class="balance-label">Current Balance:</span>
+                        <span class="balance-amount">₹ <%= walletData.balance.toFixed(2) %></span>
+                      </div>
+                      <div class="transaction-history">
+                        <h4 class="transaction-title">Transaction History</h4>
+                        <% if (walletData.transactions && walletData.transactions.length > 0) { %>
+                          <ul class="transactions" id="transactions">
+                            <% walletData.transactions.forEach(function(transaction) { %>
+                              <li class="transaction-item <%= transaction.type %>">
+                                <div class="transaction-type">
+                                  <%= transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1) %>
+                                </div>
+                                <div class="transaction-amount">
+                                  <%= transaction.type === 'debit' ? '-' : '+' %> ₹<%= transaction.amount.toFixed(2) %>
+                                </div>
+                                <div class="transaction-date">
+                                  <%= new Date(transaction.date).toLocaleString('en-IN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) %>
+                                </div>
+                                <% if (transaction.description) { %>
+                                  <div class="transaction-description"><%= transaction.description %></div>
+                                <% } %>
+                              </li>
+                            <% }); %>
+                          </ul>
+                        <% } else { %>
+                          <p class="no-transactions">No transactions found.</p>
+                        <% } %>
+                      </div>
+                    <% } else { %>
+                      <p class="no-wallet">No Wallet</p>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+
+
+
+
+              <div
+                class="tab-pane fade"
+                id="tab-address"
+                role="tabpanel"
+                aria-labelledby="tab-address-link"
+              >
+                <p>
+                  The following addresses will be used on the checkout page by
+                  default.
+                </p>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="card card-dashboard">
+                      <div class="card-body">
+                        <h3 class="card-title">Billing Address</h3>
+                        <% address.forEach(addr => { %>
+                        <p>
+                          <%= addr.name %><br />
+                          <%= addr.houseName %><br />
+                          <%= addr.street %><br />
+                          <%= addr.city %>, <%= addr.state %> <%= addr.pincode
+                          %><br />
+                          <%= addr.mobile %><br />
+                          <%= addr.user %><br />
+                          <a
+                            href="#"
+                            class="edit-address btn btn-secondary"
+                            data-address="<%= JSON.stringify(addr) %>"
+                            data-toggle="modal"
+                            data-target="#editAddressModal"
+                            >Edit <i class="icon-edit"></i
+                          ></a>
+                          <br />
+                          <a
+                            href="#"
+                            class="btn btn-primary delete-address"
+                            data-address-id="<%= addr._id %>"
+                            >Delete Address<i class="bi bi-trash"></i
+                          ></a>
+                        </p>
+                        <% }); %>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="card card-dashboard">
+                      <div class="card-body">
+                        <h3 class="card-title">Shipping Address</h3>
+                        <p>
+                          You have not set up this type of address yet.<br />
+                        </p>
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                          data-toggle="modal"
+                          data-target="#exampleModalCenter"
+                        >
+                          Add Address
+                        </button>
+                        <div
+                          class="modal fade"
+                          id="exampleModalCenter"
+                          tabindex="-1"
+                          role="dialog"
+                          aria-labelledby="exampleModalCenterTitle"
+                          aria-hidden="true"
+                        >
+                          <div
+                            class="modal-dialog modal-dialog-centered"
+                            role="document"
+                          >
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5
+                                  class="modal-title"
+                                  id="exampleModalCenterTitle"
+                                >
+                                  Add Address
+                                </h5>
+                                <button
+                                  type="button"
+                                  class="close"
+                                  data-dismiss="modal"
+                                  aria-label="Close"
+                                >
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <form
+                                  action="#"
+                                  id="addAddressForm"
+                                  class="mt-4"
+                                >
+                                  <div class="form-group">
+                                    <label for="name">Name:</label>
+                                    <input
+                                      type="text"
+                                      id="name"
+                                      name="name"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter your name.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="mobile">Mobile:</label>
+                                    <input
+                                      type="text"
+                                      id="mobile"
+                                      name="mobile"
+                                      class="form-control"
+                                      pattern="^\d{10}$"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter a valid 10-digit mobile
+                                      number.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="houseName">House Name:</label>
+                                    <input
+                                      type="text"
+                                      id="houseName"
+                                      name="houseName"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter your house name.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="street">Street:</label>
+                                    <input
+                                      type="text"
+                                      id="street"
+                                      name="street"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter your street.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="landmark">Landmark:</label>
+                                    <input
+                                      type="text"
+                                      id="landmark"
+                                      name="landmark"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter a landmark.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="pincode">Pincode:</label>
+                                    <input
+                                      type="text"
+                                      id="pincode"
+                                      name="pincode"
+                                      class="form-control"
+                                      pattern="^\d{6}$"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter a valid 6-digit pincode.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="city">City:</label>
+                                    <input
+                                      type="text"
+                                      id="city"
+                                      name="city"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter your city.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="state">State:</label>
+                                    <input
+                                      type="text"
+                                      id="state"
+                                      name="state"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter your state.
+                                    </div>
+                                  </div>
+
+                                  <button type="submit" class="btn btn-primary">
+                                    Add Address
+                                  </button>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button
+                                  type="button"
+                                  class="btn btn-secondary"
+                                  data-dismiss="modal"
+                                >
+                                  Close
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Edit Address Modal -->
+                        <div
+                          class="modal fade"
+                          id="editAddressModal"
+                          tabindex="-1"
+                          role="dialog"
+                          aria-labelledby="editAddressModalTitle"
+                          aria-hidden="true"
+                        >
+                          <div
+                            class="modal-dialog modal-dialog-centered"
+                            role="document"
+                          >
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5
+                                  class="modal-title"
+                                  id="editAddressModalTitle"
+                                >
+                                  Edit Address
+                                </h5>
+                                <button
+                                  type="button"
+                                  class="close"
+                                  data-dismiss="modal"
+                                  aria-label="Close"
+                                >
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <form id="editAddressForm" class="mt-4">
+                                  <input
+                                    type="hidden"
+                                    id="editAddressId"
+                                    name="addressId"
+                                  />
+                                  <div class="form-group">
+                                    <label for="editName">Name:</label>
+                                    <input
+                                      type="text"
+                                      id="editName"
+                                      name="name"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter your name.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="editMobile">Mobile:</label>
+                                    <input
+                                      type="text"
+                                      id="editMobile"
+                                      name="mobile"
+                                      class="form-control"
+                                      pattern="^\d{10}$"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter a valid 10-digit mobile
+                                      number.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="editHouseName"
+                                      >House Name:</label
+                                    >
+                                    <input
+                                      type="text"
+                                      id="editHouseName"
+                                      name="houseName"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter your house name.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="editStreet">Street:</label>
+                                    <input
+                                      type="text"
+                                      id="editStreet"
+                                      name="street"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter your street.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="editLandmark">Landmark:</label>
+                                    <input
+                                      type="text"
+                                      id="editLandmark"
+                                      name="landmark"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter a landmark.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="editPincode">Pincode:</label>
+                                    <input
+                                      type="text"
+                                      id="editPincode"
+                                      name="pincode"
+                                      class="form-control"
+                                      pattern="^\d{6}$"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter a valid 6-digit pincode.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="editCity">City:</label>
+                                    <input
+                                      type="text"
+                                      id="editCity"
+                                      name="city"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter your city.
+                                    </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="editState">State:</label>
+                                    <input
+                                      type="text"
+                                      id="editState"
+                                      name="state"
+                                      class="form-control"
+                                      required
+                                    />
+                                    <div class="invalid-feedback">
+                                      Please enter your state.
+                                    </div>
+                                  </div>
+
+                                  <button type="submit" class="btn btn-primary">
+                                    Update Address
+                                  </button>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button
+                                  type="button"
+                                  class="btn btn-secondary"
+                                  data-dismiss="modal"
+                                >
+                                  Close
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Add any other modals or content needed -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+              class="tab-pane fade"
+              id="tab-account"
+              role="tabpanel"
+              aria-labelledby="tab-account-link"
+          >
+              <h2>Change Password</h2>
+              <form id="changePasswordForm" action="/changePassword" method="post">
+                  <div class="form-group">
+                      <label for="currentPassword">Current password *</label>
+                      <input type="password" class="form-control" id="currentPassword" name="currentPassword" required />
+                  </div>
+                  <div class="form-group">
+                      <label for="newPassword">New password *</label>
+                      <input type="password" class="form-control" id="newPassword" name="newPassword" required />
+                  </div>
+                  <div class="form-group">
+                      <label for="confirmNewPassword">Confirm new password *</label>
+                      <input type="password" class="form-control" id="confirmNewPassword" name="confirmNewPassword" required />
+                  </div>
+                  <button type="submit" class="btn btn-primary">Save Changes</button>
+              </form>
+          </div>
+      </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Edit Address Modal -->
+<div
+  class="modal fade"
+  id="editAddressModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="editAddressModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editAddressModalCenterTitle">
+          Edit Address
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="#" id="editAddressForm" class="mt-4">
+          <input type="hidden" id="addressId" name="addressId" />
+          <div class="form-group">
+            <label for="editName">Name:</label>
+            <input
+              type="text"
+              id="editName"
+              name="name"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">Please enter your name.</div>
+          </div>
+          <div class="form-group">
+            <label for="editMobile">Mobile:</label>
+            <input
+              type="text"
+              id="editMobile"
+              name="mobile"
+              class="form-control"
+              pattern="^\d{10}$"
+              required
+            />
+            <div class="invalid-feedback">
+              Please enter a valid 10-digit mobile number.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="editHouseName">House Name:</label>
+            <input
+              type="text"
+              id="editHouseName"
+              name="houseName"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">Please enter your house name.</div>
+          </div>
+          <div class="form-group">
+            <label for="editStreet">Street:</label>
+            <input
+              type="text"
+              id="editStreet"
+              name="street"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">Please enter your street.</div>
+          </div>
+          <div class="form-group">
+            <label for="editLandmark">Landmark:</label>
+            <input
+              type="text"
+              id="editLandmark"
+              name="landmark"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">Please enter a landmark.</div>
+          </div>
+          <div class="form-group">
+            <label for="editPincode">Pincode:</label>
+            <input
+              type="text"
+              id="editPincode"
+              name="pincode"
+              class="form-control"
+              pattern="^\d{6}$"
+              required
+            />
+            <div class="invalid-feedback">
+              Please enter a valid 6-digit pincode.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="editCity">City:</label>
+            <input
+              type="text"
+              id="editCity"
+              name="city"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">Please enter your city.</div>
+          </div>
+          <div class="form-group">
+            <label for="editState">State:</label>
+            <input
+              type="text"
+              id="editState"
+              name="state"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">Please enter your state.</div>
+          </div>
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              id="editDefault"
+              name="default"
+              class="form-check-input"
+            />
+            <label for="editDefault" class="form-check-label"
+              >Default Address</label
+            >
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            Save Changes
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.querySelector("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const currentPassword = document.querySelector(
+      'input[name="currentPassword"]'
+    ).value;
+    const newPassword = document.querySelector('input[name="newPassword"]')
+      .value;
+    const confirmNewPassword = document.querySelector(
+      'input[name="confirmNewPassword"]'
+    ).value;
+
+    try {
+      const response = await fetch("/changePassword", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+          confirmNewPassword,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          title: "Success!",
+          text: result.message,
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: result.message || "An error occurred",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "Internal Server Error",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  });
+</script>
+
+<script>
+  $(document).ready(function () {
+    // Function to validate form
+    function validateForm(form) {
+      var isValid = true;
+      $(form)
+        .find("input")
+        .each(function () {
+          if (!this.checkValidity()) {
+            isValid = false;
+            $(this).addClass("is-invalid");
+          } else {
+            $(this).removeClass("is-invalid");
+          }
+        });
+      return isValid;
+    }
+
+    // Add address form submission
+    $("#addAddressForm").on("submit", function (e) {
+      e.preventDefault();
+      if (!validateForm(this)) {
+        return;
+      }
+
+      var formData = new FormData(this);
+      var formEntries = {};
+
+      formData.forEach(function (value, key) {
+        formEntries[key] = value;
+      });
+
+      $.ajax({
+        type: "POST",
+        url: "/addAddress",
+        contentType: "application/json",
+        data: JSON.stringify(formEntries),
+        success: function (response) {
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Address added successfully",
+          });
+          $("#exampleModalCenter").modal("hide");
+          $("#addAddressForm")[0].reset();
+          // Optionally, refresh the address list or page here
+        },
+        error: function (xhr, status, error) {
+          console.error("Error:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "An error occurred: " + xhr.responseText,
+          });
+        },
+      });
+    });
+
+    // Populate edit address form with existing data
+    // On clicking the edit button, populate the edit modal with the address data
+    $(".edit-address").on("click", function () {
+      var address = $(this).data("address");
+      $("#addressId").val(address._id); // Populate hidden input with address ID
+      $("#editName").val(address.name);
+      $("#editMobile").val(address.mobile);
+      $("#editHouseName").val(address.houseName);
+      $("#editStreet").val(address.street);
+      $("#editLandmark").val(address.landmark);
+      $("#editPincode").val(address.pincode);
+      $("#editCity").val(address.city);
+      $("#editState").val(address.state);
+      $("#editDefault").prop("checked", address.default);
+    });
+
+    // Edit address form submission
+    $("#editAddressForm").on("submit", function (e) {
+      e.preventDefault();
+      if (!validateForm(this)) {
+        return;
+      }
+
+      var formData = new FormData(this);
+      var formEntries = {};
+
+      // Add form data entries to formEntries object
+      formData.forEach(function (value, key) {
+        formEntries[key] = value;
+      });
+
+      // Add addressId to formEntries object
+      formEntries["addressId"] = $("#addressId").val();
+
+      $.ajax({
+        type: "POST",
+        url: "/editAddress",
+        contentType: "application/json",
+        data: JSON.stringify(formEntries),
+        success: function (response) {
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Address updated successfully",
+          });
+          $("#editAddressModal").modal("hide");
+          // Optionally, refresh the address list or page here
+        },
+        error: function (xhr, status, error) {
+          console.error("Error:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "An error occurred: " + xhr.responseText,
+          });
+        },
+      });
+    });
+
+    // Delete address
+    $(document).ready(function () {
+      $(".delete-address").on("click", function () {
+        var addressId = $(this).data("address-id");
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Do you really want to delete this address?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              type: "DELETE",
+              url: "/deleteAddress",
+              contentType: "application/json",
+              data: JSON.stringify({ addressId: addressId }),
+              success: function (response) {
+                Swal.fire({
+                  icon: "success",
+                  title: "Deleted!",
+                  text: "Address deleted successfully",
+                });
+                // Remove the deleted address from the DOM
+                $('[data-address-id="' + addressId + '"]')
+                  .closest("p")
+                  .remove();
+                // Optionally, refresh the address list or page here
+              },
+              error: function (xhr, status, error) {
+                console.error("Error:", error);
+                Swal.fire({
+                  icon: "error",
+                  title: "Error",
+                  text: "An error occurred: " + xhr.responseText,
+                });
+              },
+            });
+          }
+        });
+      });
+    });
+
+    // Sign out
+    $("#signOutLink").on("click", function (e) {
+      e.preventDefault();
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to sign out?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, sign out!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "POST",
+            url: "/signOut", // Endpoint for sign out
+            success: function (response) {
+              Swal.fire({
+                icon: "success",
+                title: "Signed Out",
+                text: "You have been signed out successfully.",
+              }).then(() => {
+                window.location.href = "/login"; // Redirect to login page
+              });
+            },
+            error: function (xhr, status, error) {
+              console.error("Sign out error:", error);
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text:
+                  "An error occurred while signing out: " + xhr.responseText,
+              });
+            },
+          });
+        }
+      });
+    });
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".cancel-order").forEach((button) => {
+      button.addEventListener("click", function () {
+        const orderId = this.getAttribute("data-order-id");
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to cancel this order?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, cancel it!",
+          cancelButtonText: "No, keep it",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch(`/cancelOrder/${orderId}`, {
+              method: "POST",
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.success) {
+                  Swal.fire(
+                    "Cancelled!",
+                    "Your order has been cancelled.",
+                    "success"
+                  ).then(() => {
+                    window.location.reload();
+                  });
+                } else {
+                  Swal.fire(
+                    "Error!",
+                    "An error occurred while canceling your order.",
+                    "error"
+                  );
+                }
+              });
+          }
+        });
+      });
+      
+    });
+    
+  });
+  
+  
+</script>
+<script>
+ function returnOrder(orderId){
+console.log(orderId,"orderIdfghxh");
+
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to return this order?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, return it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/return-order/${orderId}`, {
+            // or '/return-order'
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                Swal.fire(
+                  "Returned!",
+                  "Your order has been returned.",
+                  "success"
+                ).then(() => {
+                  window.location.reload();
+                });
+              } else {
+                Swal.fire(
+                  "Error!",
+                  data.message ||
+                    "An error occurred while returning the order.",
+                  "error"
+                );
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              Swal.fire(
+                "Error!",
+                "An error occurred while returning the order.",
+                "error"
+              );
+            });
+        }
+      });
+    };
+  
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document
+    .querySelector("#changePasswordForm")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const currentPassword = form.querySelector(
+        'input[name="currentPassword"]'
+      ).value;
+      const newPassword = form.querySelector('input[name="newPassword"]').value;
+      const confirmNewPassword = form.querySelector(
+        'input[name="confirmNewPassword"]'
+      ).value;
+
+      try {
+        const response = await fetch("/changePassword", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            currentPassword,
+            newPassword,
+            confirmNewPassword,
+          }),
+        });
+
+        const result = await response.json();
+
+        Swal.fire({
+          title: response.ok ? "Success!" : "Error",
+          text: result.message || "An error occurred",
+          icon: response.ok ? "success" : "error",
+          confirmButtonText: "OK",
+        });
+
+        if (response.ok) form.reset();
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "Internal Server Error", // This handles a generic internal server error
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    });
+
+  // function returnOrder(orderId) {
+  //   fetch(`/return-order/${orderId}`, { method: 'POST' })
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       if (data.success) {
+
+  //         location.reload();
+  //       } else {
+  //         alert(data.message || 'Error submitting return request');
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error('Error:', error);
+  //       alert('An error occurred while submitting the return request');
+  //     });
+  // }
+
+</script>

@@ -1,0 +1,277 @@
+<%- include('../layoutAdmin/header') %>
+
+        <style>
+            .card,
+            .icontext {
+                height: 100%;
+            }
+
+            .column-top-space {
+                margin-top: 20px;
+            }
+
+            .column-bottom-space {
+                margin-top: 50px;
+            }
+        </style>
+
+
+        <section class="content-main ">
+            
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Dashboard </h2>
+                    <p>Whole data about your business here</p>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-lg-3 column-top-space">
+                    <div class="card card-body mb-4">
+                        <article class="icontext">
+                            <span class="icon icon-sm rounded-circle bg-primary-light"><i
+                                    class="text-primary material-icons md-monetization_on"></i></span>
+                            <div class="text">
+                                <h6 class="mb-1 card-title">Revenue</h6>
+                                <span>₹ <%= revenue[0] ? revenue[0].total.toFixed(2) : 0 %></span>
+                                <!-- <span class="text-sm">
+                                    Shipping fees are not included
+                                </span> -->
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="col-lg-3 column-top-space">
+                    <div class="card card-body mb-4">
+                        <article class="icontext">
+                            <span class="icon icon-sm rounded-circle bg-success-light"><i
+                                    class="text-success material-icons md-local_shipping"></i></span>
+                            <div class="text">
+                                <h6 class="mb-1 card-title">Orders</h6> <span>
+                                    <%= totalOrders %>
+                                </span>
+                                <!-- <span class="text-sm">
+                                    Excluding orders in transit
+                                </span> -->
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="col-lg-3 column-top-space">
+                    <div class="card card-body mb-4 ">
+                        <article class="icontext">
+                            <span class="icon icon-sm rounded-circle bg-info-light"><i
+                                    class="text-info material-icons md-person"></i></span>
+                            <div class="text">
+                                <h6 class="mb-1 card-title">Total Users</h6> <span>
+                                    <%= totalUsers %>
+                                </span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 column-top-space">
+                    <div class="card card-body mb-4">
+                        <article class="icontext">
+                            <span class="icon icon-sm rounded-circle bg-info-light"><i
+                                    class="text-info material-icons md-today"></i></span>
+                            <div class="text">
+                                <h6 class="mb-1 card-title">Daily Revenue</h6> <span>₹ <%= dailyRevenue[0] ?
+                                        dailyRevenue[0].total.toFixed(2):0 %></span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="col-lg-3 column-top-space">
+                    <div class="card card-body mb-4">
+                        <article class="icontext">
+                            <span class="icon icon-sm rounded-circle bg-info-light"><i
+                                    class="text-info material-icons md-date_range"></i></span>
+                            <div class="text">
+                                <h6 class="mb-1 card-title">Weekly Revenue</h6> <span>₹ <%= weeklyRevenue[0] ?
+                                        weeklyRevenue[0].total.toFixed(2) :0 %></span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="col-lg-3 column-top-space">
+                    <div class="card card-body mb-4">
+                        <article class="icontext">
+                            <span class="icon icon-sm rounded-circle bg-info-light"><i
+                                    class="text-info material-icons md-shopping_basket"></i></span>
+                            <div class="text">
+                                <h6 class="mb-1 card-title">Monthly Revenue</h6><span>₹ <%= monthlyRevenue[0] ?
+                                        monthlyRevenue[0].total.toFixed(2) :0 %></span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="col-lg-3 column-top-space">
+                    <div class="card card-body mb-4">
+                        <article class="icontext">
+                            <span class="icon icon-sm rounded-circle bg-info-light"><i
+                                    class="text-info material-icons md-insert_invitation"></i></span>
+                            <div class="text">
+                                <h6 class="mb-1 card-title">Yearly Revenue</h6> <span>₹ <%= yearlyRevenue[0] ?
+                                        yearlyRevenue[0].total.toFixed(2) :0 %></span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+
+                <!-- <div class="col-12 column-top-space">
+                    <div class="card mb-4 column-top-space">
+                        <article class="card-body">
+                            <h5 class="card-title">Sale statistics</h5>
+                            <canvas id="myChart" height="120px"></canvas>
+                        </article>
+                    </div>
+
+                </div> -->
+
+                <div class="mb-3">
+                    <label for="filterSelect" class="form-label">Filter:</label>
+                    <select id="filterSelect" class="form-select">
+                        <option value="daily" <%= currentFilter === 'daily' ? 'selected' : '' %>>Daily</option>
+                        <option value="weekly" <%= currentFilter === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                        <option value="monthly" <%= currentFilter === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                        <option value="yearly" <%= currentFilter === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                    </select>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12 mb-4 column-bottom-space">
+                        <div class="card w-100 ">
+                            <article class="card-body">
+                                <h5 class="card-title">
+                                    Daily Sale statistics</h5>
+                                <canvas id="myChart2"></canvas>
+                            </article>
+                        </div>
+                    </div>
+                
+
+                    <!-- Top Selling Categories -->
+                  
+
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <article class="card-body">
+                                <h5 class="card-title">Top Best Selling Categories</h5>
+                                <ul class="list-unstyled">
+                                    <%  topSellingCategories.forEach(category => { %>
+                                        <li><%= category.name %>: <%= category.totalQuantity %> units</li>
+                                    <% }) %>
+                                </ul>
+                            </article>
+                        </div>
+                    </div>
+                   
+                    <!-- Top Selling Products -->
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <article class="card-body">
+                                <h5 class="card-title">Top Best Selling Products</h5>
+                                <ul class="list-unstyled">
+                                    <% topSellingProducts.forEach(product => { %>
+                                        <li><%= product.productName %>: <%= product.totalQuantity %> units</li>
+                                    <% }) %>
+                                </ul>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+        </section>
+        <!-- Add Chart.js script tag before your script -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // console.log("EJS: Checking salesDataJSON from server:");
+                
+                const salesDataJSON = '<%- salesDataJSON %>';
+        
+                let salesData;
+                try {
+                    salesData = JSON.parse(salesDataJSON);
+                } catch (e) {
+                    console.error("Failed to parse salesDataJSON:", e);
+                }
+        
+                if (salesData) {
+                    const labels = salesData.map(item => item._id);
+        
+                    const salesArray = salesData.map(item => item.total);
+        
+                    const ctx = document.getElementById("myChart2").getContext('2d');
+                    const myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: "Sales",
+                                backgroundColor: "#5897fb",
+                                barThickness: 30,
+                                data: salesArray,
+                            }]
+                        },
+                        options: {
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        usePointStyle: true,
+                                    },
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return `Sales: ₹${context.formattedValue}`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '₹' + value;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.error("Sales data is not available for the chart.");
+                }
+        
+                // Add event listener for filter change
+                document.getElementById('filterSelect').addEventListener('change', function() {
+                    const selectedFilter = this.value;
+                    console.log("Filter selected:", selectedFilter);
+                    window.location.href = `/admin/adminDashboard?filter=${selectedFilter}`;
+                });
+            });
+        </script>
+        
+      
+
+        <script>
+                const progressBars = document.querySelectorAll('.progress-bar');
+                progressBars.forEach(bar => {
+                    const width = bar.getAttribute('data-width');
+                    bar.style.width = width + '%';
+                });
+           
+        </script>
+
+<%- include('../layoutAdmin/footer') %>

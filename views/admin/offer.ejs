@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <head>
+        <meta charset="utf-8" />
+        <title>Nest Dashboard</title>
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta property="og:title" content="" />
+        <meta property="og:type" content="" />
+        <meta property="og:url" content="" />
+        <meta property="og:image" content="" />
+        <link rel="shortcut icon" type="image/x-icon" href="/adminCss/imgs/theme/favicon.svg" />
+        <link href="/adminCss/css/main.css?v=1.1" rel="stylesheet" type="text/css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    </head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <style>
+        /* Hide number input spinner buttons */
+        input[type=number] {
+            -moz-appearance: textfield; /* Firefox */
+            appearance: textfield; /* Chrome, Safari, Edge */
+        }
+
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            display: none; /* Chrome, Safari, Edge */
+        }
+
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none; /* Safari */
+        }
+
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none; /* Safari */
+        }
+    </style>
+</head>
+<body class="dark">
+    <div class="screen-overlay"></div>
+    <!-- Side nav bar -->
+    <%- include('../layoutAdmin/header') %>
+
+   
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Offer</h2>
+                    <p>Add coupon</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <form id="offerForm" method="post">
+                                <div class="mb-4">
+                                    <label for="offerType" class="form-label">Type</label>
+                                    <select class="form-control" id="offerType" name="offerType" required>
+                                        <option value="" disabled selected>Select Type</option>
+                                        <option value="product">Product</option>
+                                        <option value="category">Category</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="offerName" class="form-label">Name</label>
+                                    <input type="text" placeholder="Type here" class="form-control" id="offerName" name="offerName" required />
+                                </div>
+                                <div class="mb-4">
+                                    <label for="percentage" class="form-label">Percentage</label>
+                                    <input type="number" placeholder="Type here" class="form-control" id="percentage" name="percentage" required />
+                                </div>
+                                <div class="mb-4">
+                                    <label for="offerExpired" class="form-label">Expired</label>
+                                    <input type="date" placeholder="Type here" class="form-control" id="offerExpired" name="offerExpired" required />
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn btn-primary" type="submit">Create Offer</button>
+                                </div>
+                            </form>
+                        </div>
+
+
+
+                        
+                        <div class="col-md-9">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <% if (offerData.length === 0) { %>
+                                        <p style="text-align: center;">No Offer Created</p>
+                                    <% } else { %>
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Name</th>
+                                            <th>Percentage</th>
+                                            <th>Expired</th>
+                                            <th>Status</th>
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Offer data will be rendered here -->
+                                      
+                                            <% offerData.forEach((offer) => { %>
+                                                <tr>
+                                                    <td><%= offer.type %></td>
+                                                    <td><%= offer.name %></td>
+                                                    <td><%= offer.percentage %></td>
+                                                    <td><%= offer.expireDate.getDate()%>/
+                                                        <%= offer.expireDate.getMonth() + 1 %>/
+                                                        <%= offer.expireDate.getFullYear() %>
+                                                    </td>
+                                                    <td>
+                                                        <% if (new Date(offer.expireDate) < new Date()) { %>
+                                                            <span class="text-danger">Expired</span>
+                                                        <% } else { %>
+                                                            <span class="text-success">Active</span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <div class="dropdown">
+                                                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
+                                                                <i class="material-icons md-more_horiz"></i>
+                                                            </a>
+                                                            <div class="dropdown-menu dropdown-menu-end">
+                                                                <a class="dropdown-item text-danger" href="/admin/offer/deleteOffer?offerId=<%= offer._id %>">Delete</a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    
+                </div>
+            </div>
+        </section>
+        <footer class="main-footer font-xs"></footer>
+   
+
+
+
+    <script src="/adminCss/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/adminCss/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/adminCss/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="/adminCss/js/vendors/perfect-scrollbar.js"></script>
+    <script src="/adminCss/js/vendors/select2.min.js"></script>
+    <script src="/adminCss/js/main.js?v=1.1" type="text/javascript"></script>
+    <script>
+
+        
+        document.getElementById('offerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const offerType = document.getElementById('offerType').value.trim();
+            const offerName = document.getElementById('offerName').value.trim();
+            const percentage = document.getElementById('percentage').value.trim();
+            const offerExpired = document.getElementById('offerExpired').value.trim();
+            console.log('offerType',offerType);
+            
+            if (!offerName || !percentage || !offerExpired || !offerType) {
+                Toastify({
+                    text: "Please fill out all fields",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#ff6b6b",
+                }).showToast();
+                return;
+            }
+
+            if (isNaN(percentage) || percentage <= 0 || percentage > 100) {
+                Toastify({
+                    text: "Percentage must be a number between 1 and 100",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#ff6b6b",
+                }).showToast();
+                return;
+            }
+
+            // If client-side validation passes, make an AJAX request
+            fetch('/admin/addOffer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    offerName,
+                    percentage,
+                    offerExpired,
+                    offerType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    Toastify({
+                        text: data.error,
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#ff6b6b",
+                    }).showToast();
+                } else {
+                    Toastify({
+                        text: data.message,
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#23c6c8",
+                    }).showToast();
+
+                    // Reload the page or update the table with new offer data
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                Toastify({
+                    text: "Internal server error",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#ff6b6b",
+                }).showToast();
+            });
+        });
+    
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('offerExpired').setAttribute('min',today)
+
+    </script>
+</body>
+</html>

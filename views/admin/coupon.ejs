@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Nest Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="" />
+    <meta property="og:type" content="" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <link rel="shortcut icon" type="image/x-icon" href="/adminCss/imgs/theme/favicon.svg" />
+    <link href="/adminCss/css/main.css?v=1.1" rel="stylesheet" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+
+<body class="dark">
+    <div class="screen-overlay"></div>
+
+    <%- include('../layoutAdmin/header') %>
+
+
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Coupon</h2>
+                <p>Add coupon</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <% if (typeof message !== 'undefined' ) { %>
+                            <p style="color: red;" class="d-inline-flex p-2 ">
+                                <%= message %>*
+                            </p>
+                        <% } %>
+                        <form id="couponForm">
+                            <input type="hidden" id="couponId" name="couponId">
+                            <div class="mb-4">
+                                <label for="couponName" class="form-label">Name</label>
+                                <input type="text" placeholder="Type here" class="form-control"
+                                    id="couponName" name="couponName" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="couponCode" class="form-label">Code</label>
+                                <input type="text" placeholder="Type here" class="form-control"
+                                    id="couponCode" name="couponCode" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="minAmount" class="form-label">Min Amount</label>
+                                <input type="number" placeholder="Type here" class="form-control"
+                                    id="minAmount" name="minAmount" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="couponAmount" class="form-label">Amount</label>
+                                <input type="number" placeholder="Type here" class="form-control"
+                                    id="couponAmount" name="couponAmount" required />
+                            </div>
+                            <div class="mb-4">
+                                <label for="couponExpired" class="form-label">Expired</label>
+                                <input type="date" class="form-control" id="couponExpired"
+                                    name="couponExpired" required />
+                            </div>
+                            <div class="d-grid">
+                                <button class="btn btn-primary" type="submit" id="submitButton">Create Coupon</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <% if (coupons.length <= 0) { %>
+                                    <p style="text-align: center;">No Coupon Created</p>
+                                <% } else { %>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Code</th>
+                                            <th>Min Amount</th>
+                                            <th>Amount</th>
+                                            <th>Expired</th>
+                                            <th>Status</th>
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                <% } %>
+                                <tbody>
+                                    <% coupons.forEach(element => { %>
+                                        <tr>
+                                            <td><%= element.name %></td>
+                                            <td><%= element.couponCode %></td>
+                                            <td><%= element.minimumAmount %></td>
+                                            <td><%= element.amount %></td>
+                                            <td><%= new Date(element.expired).toLocaleDateString() %></td>
+                                            <td>
+                                                <% if (new Date(element.expired) < new Date()) { %>
+                                                    <span class="text-danger">Expired</span>
+                                                <% } else { %>
+                                                    <span class="text-success">Active</span>
+                                                <% } %>
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="dropdown">
+                                                    <a href="#" data-bs-toggle="dropdown"
+                                                        class="btn btn-light rounded btn-sm font-sm">
+                                                        <i class="material-icons md-more_horiz"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a class="dropdown-item text-primary editCoupon" href="#" data-id="<%= element._id %>">Edit</a>
+                                                        <a class="dropdown-item text-danger" href="/admin/deleteCoupon/<%= element._id %>">Delete</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer class="main-footer font-xs"></footer>
+    
+    <script src="/adminCss/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="/adminCss/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="/adminCss/js/vendors/jquery.fullscreen.min.js"></script>
+    <script src="/adminCss/js/main.js?v=1.1" type="text/javascript"></script>
+    
+    <script>
+       function showToast(message, type) {
+    Toastify({
+        text: message,
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: "right",
+        style: {
+            background: type === 'success' ? "green" : "red",
+        },
+        stopOnFocus: true
+    }).showToast();
+}
+    
+document.addEventListener('DOMContentLoaded', function () {
+    let isEditing = false;
+
+    document.querySelectorAll('.editCoupon').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const couponId = this.getAttribute('data-id');
+            isEditing = true;
+
+            // Fetch coupon details
+            fetch(`/admin/getCoupon/${couponId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const coupon = data.coupon;
+                        document.getElementById('couponId').value = coupon._id;
+                        document.getElementById('couponName').value = coupon.name;
+                        document.getElementById('couponCode').value = coupon.couponCode;
+                        document.getElementById('minAmount').value = coupon.minimumAmount;
+                        document.getElementById('couponAmount').value = coupon.amount;
+                        document.getElementById('couponExpired').value = new Date(coupon.expired).toISOString().split('T')[0];
+                        
+                        // Ensure the element exists before setting textContent
+                        const submitButton = document.getElementById('submitButton');
+                        if (submitButton) {
+                            submitButton.textContent = 'Update Coupon';
+                        }
+
+                        const formTitle = document.getElementById('formTitle');
+                        if (formTitle) {
+                            formTitle.textContent = 'Edit Coupon';
+                        }
+                    } else {
+                        throw new Error(data.message || 'Failed to fetch coupon details');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast(`Error: ${error.message}`, 'error');
+                });
+        });
+    });
+
+    document.getElementById('couponForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const couponId = document.getElementById('couponId').value;
+        const couponName = document.getElementById('couponName').value.trim();
+        const couponCode = document.getElementById('couponCode').value.trim();
+        const couponAmount = document.getElementById('couponAmount').value.trim();
+        const couponExpired = document.getElementById('couponExpired').value.trim();
+        const minAmount = document.getElementById('minAmount').value.trim();
+
+        if (!couponName || !couponCode || !couponAmount || !couponExpired || !minAmount || isNaN(couponAmount) || isNaN(minAmount) || parseFloat(couponAmount) <= 0 || parseFloat(minAmount) <= 0 || isNaN(Date.parse(couponExpired)) || new Date(couponExpired) < new Date()) {
+            showToast('Invalid input. Please check your entries.', 'error');
+            return;
+        }
+
+        const url = isEditing ? `/admin/updateCoupon/${couponId}` : '/admin/addCoupon';
+        
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ couponId, couponName, couponCode, couponAmount, couponExpired, minAmount })
+        }).then(response => response.json()).then(data => {
+            showToast(data.message, data.success ? 'success' : 'error');
+            if (data.success) {
+                setTimeout(() => {
+                    window.location.href = "/admin/coupon";
+                }, 3000);
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            showToast('An error occurred.', 'error');
+        });
+    });
+
+    function resetForm() {
+        document.getElementById('couponForm').reset();
+        document.getElementById('couponId').value = '';
+        const submitButton = document.getElementById('submitButton');
+        if (submitButton) {
+            submitButton.textContent = 'Create Coupon';
+        }
+        const formTitle = document.getElementById('formTitle');
+        if (formTitle) {
+            formTitle.textContent = 'Add Coupon';
+        }
+        isEditing = false;
+    }
+
+    // Add a reset button if you want to clear the form
+    // document.getElementById('resetButton').addEventListener('click', resetForm);
+});
+
+    </script>
+    
